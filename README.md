@@ -1,29 +1,27 @@
 # trilobyte
-
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vite.dev/config/).
-
 ## Project Setup
-
 ```sh
-npm install
+# clone from github and then inside the project folder
+npm install #installs dependecies listed in package.json
+firebase init #initialize a firebase project in this dir
+# use onlyhosting and say no to singlepage app and any options which overwrite existing files
 ```
 
 ### Compile and Hot-Reload for Development
 
 ```sh
-npm run dev
+npm run dev 
 ```
 
-### Compile and Minify for Production
+### Compile and Deploy
 
 ```sh
 npm run build
+firebase deploy --only hosting 
 ```
+
+## When developing
+Static html and css files go into /public
+The index.html file must go in the project folder (trilobyte)
+Vue components/pages go into src/components
+Vue assets go into src/assets
