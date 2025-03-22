@@ -1,4 +1,4 @@
-import './assets/main.css'
+import './assets/fishstyle.css'
 
 import { createApp } from 'vue'
 import App from './App.vue'
