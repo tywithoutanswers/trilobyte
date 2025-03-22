@@ -1,29 +1,18 @@
 # trilobyte
+Setting up the project on a local repository
 
-This template should help get you started developing with Vue 3 in Vite.
-
-## Recommended IDE Setup
-
-[VSCode](https://code.visualstudio.com/) + [Volar](https://marketplace.visualstudio.com/items?itemName=Vue.volar) (and disable Vetur).
-
-## Customize configuration
-
-See [Vite Configuration Reference](https://vitejs.dev/config/).
+required Node.js
 
 ## Project Setup
-
 ```sh
-npm install
+npm install #to install dependencies like vite
 ```
-
-### Compile and Hot-Reload for Development
-
+## Local Test
 ```sh
-npm run dev
+npm run dev #to locally test without deploying to firebase
 ```
-
-### Compile and Minify for Production
-
+## Deploy to firebase
 ```sh
 npm run build
+firebase deploy --only hosting #deploy to firebase
 ```
