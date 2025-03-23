@@ -6,92 +6,147 @@
             FRAMERATE = 60;
             GRAVITY = 0.01;
             // VARIABLES
-            fish = {
-                y:0,
-                h:10,
-                dy:0,
-                element:NULL,
+            fishSpeed = 0.1;
+            captureProgress = 0;
+            fishZone = {
+                y : 0,
+                dy : 2,
+                h : 5
             }
             captureZone = {
-                y:0,
-                h:10,
-                dy:0,
-                element:NULL,
+                y : 0,
+                dy : 2,
+                h : 10
             }
-            captureBound = {
-                y:0,
-                h:10,
-                element:NULL,
-            }
-
-            captureProgess = 3;
-            catpureZone.dy = 0; // positive values correspond to upwards movement
-            clicksThisFrame = 0;
-
+            
             function init() {
-                fish.element=document.getElementById("fish");
-                captureZone.element=document.getElementById("captureZone");
-                captureBound.getElementByID=document.getElementById("captureBound");
                 setInterval(gameloop,1000/FRAMERATE);
             }
             function gameloop() {
-                fish.y = 50 + Math.random() * 5;
-
-                catpureZone.dy -= GRAVITY;
-                captureZone.y += catpureZone.dy;
-                
                 updatePhysics();
                 updateHTML();
-
-
-                if (
-                    fish.y + fish.h > captureZone.y && fish.y + fish.h < captureZone.h
-                ) {
-                    captureProgess++;
-                    captureZone.element.style.background-color="red";
-                }
             }
 
             function updatePhysics() {
-                catpureZone.dy -= GRAVITY;
-                captureZone.y += catpureZone.dy;
+                fishZone.dy += Math.random() *fishSpeed;
+                fishZone.dy -= Math.random() *fishSpeed;
+                fishZone.y += fishZone.dy;
+                if (fishZone.y + fishZone.h > 100) {
+                    fishZone.y = 100 - fishZone.h;
+                    fishZone.dy *= -0.3;
+                }
+                if (fishZone.y < 0) {
+                    fishZone.y = 0;
+                    fishZone.dy *= -0.3;
+                }
+
+                captureZone.dy -= GRAVITY;
+                captureZone.y += captureZone.dy;
+                if (captureZone.y + captureZone.h > 100) {
+                    captureZone.y = 100 - captureZone.h;
+                    captureZone.dy *= -0.5;
+                }
+                if (captureZone.y < 0) {
+                    captureZone.y = 0;
+                    captureZone.dy *= -0.5;
+                }
+
+                if (
+                    fishZone.y > captureZone.y &&
+                    fishZone.y + fishZone.h < captureZone.y + captureZone.h
+                ) {
+                    captureProgress+=0.1;
+                    document.getElementById("captureProgress").style = "background-color: green;";
+                } else {
+                    document.getElementById("captureProgress").style = "background-color: blue;";
+                }
             }
 
             function updateHTML() {
-                document.getElementById("fish").style.bottom = fish.h + "%";
-                captureZone.element = document.getElementById("captureZone")
-                captureZone.element.style.bottom = captureZone.h + "%";
-                captureZone.element.style.height = captureZoneSize + "%";
-                captureProgessElement = document.getElementById("captureProgess");
-                captureProgessElement.style.height = captureProgess + "%";
+                fishZoneElement = document.getElementById("fishZone");
+                fishZoneElement.style.bottom = fishZone.y + "%";
+                fishZoneElement.style.height = fishZone.h + "%";
+
+                captureZoneElement = document.getElementById("captureZone");
+                captureZoneElement.style.bottom = captureZone.y + "%";
+                captureZoneElement.style.height = captureZone.h + "%";
+
+                captureProgressElement = document.getElementById("captureProgress");
+                captureProgressElement.style.height = captureProgress + "%";
             }
 
-            function reel() {
-                catpureZoneMomentum += 1;
+            function reel(event) {
+                event.preventDefault(event);
+                captureZone.dy += 1;
             }
         </script>
         <style>
-            .fishingGUI {
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .container {
+                display: flex;
+                width: 300px; /* Adjust as needed */
+                height: 600px; /* Adjust as needed */
+                border: 1px solid #ccc;
+            }
+            .chart-container {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #ccc;
+            }
+            .bar-chart {
+                width: 50px; /* Adjust bar width */
+                height: 80%; /* Adjust bar height */
+                background-color: lightblue;
+                border: 1px solid blue;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                flex-direction: column;
+            }
+            .bar-fill {
+                width: 100%; /* Changed to 100% */
+                /* height set inline */
                 background-color: blue;
             }
-            .captureZone {
-                background-color: beige;
-                position:relative;
-                width: 100px;
-                height: 0px;
-                left: 0px;
-                bottom: 0px;
-                z-index: 5; 
+            .rect-container {
+            flex:1;
+            position: relative; /* Important for positioning the bar and rectangle */
+            border: 1px solid black;
+            }
+            .rect {
+                width: 100%;
+                height: 100px;
+                background-color: red;
+                position: absolute;
+                display: flex;
+                justify-content: center; /* Centers horizontally */
+                align-items: center; /* Centers vertically */
+                left: 0px; /* Position relative to the bar */
+                bottom: 80px; /* Initial position at the top */
             }
         </style>
     </head>
     <body onload="init()">
-        <div onclick="reel()", class="fishingGUI", style="width: 50vh; height: 50vh; position:fixed ;">
-            <div id="captureZone", class="captureZone"></div>
-            <div id="fish", style="position:absolute; z-index: 10;" >
-                <img src="game_assets/fish.png"> 
+        <div class="container" onmousedown="reel(event);">
+            <div class="rect-container", style="flex: 1; display: flex; justify-content: center; align-items: center; border: 1px solid #ccc;">
+                <div class="rect", id="captureZone"></div>
+                <div class="rect", id="fishZone", style="bottom:500px; background-color: transparent;">
+                    <img src="fish.png", style="width: 50%;">
+                </div>
             </div>
-            <div id="captureProgess", class="captureProgess", style="background-color: aqua";></div>
+            <div class="chart-container">
+                <bar class="bar-chart">
+                    <bar id="captureProgress", class="bar-fill" style="height:30%;"></bar>
+                </bar>
+            </div>
         </div>
     </body>
 </html>
