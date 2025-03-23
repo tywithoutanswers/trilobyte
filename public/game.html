@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <style>
+            .fishing-GUI {
+                width: 45vh;
+                height: 90vh;
+                display: flex;
+                justify-self: center;
+                align-self: center;
+           } 
+           .capture {
+                background-color: brown;
+                width: 60%;
+                height: 100%;
+           }
+           .capture-zone {
+                background-color: green;
+                width: 40%;
+                height: 10%;
+                position: absolute;
+           }
+           .fish { 
+                position: absolute;
+           }
+           .progress-bar-chart {
+                background-color: burlywood;
+                width: 40%;
+                height: 100%;
+                display: flex;
+                align-items: flex-end;
+                justify-content: center;
+           }
+           .progress-bar {
+            background-color: green;
+            width: 70%;
+            height: 13%;
+           }
+        </style>
+        <link rel="stylesheet" href="game.css">
+        <script>
+            fishx = 10;
+            function gameLoop() {
+
+                document.getElementsByClassName(fish).style.left = fishx + "px"
+                fishx++;
+            }
+            window.setInterval(Gamepad,200);
+        </script>
+    </head>
+    
+    <title>Trilobyte Trawlers</title>
+    <div class="fishing-GUI">
+        <div class="capture">
+            <div class="capture-zone"></div>
+            <div class="fish">
+                <img src="game_assets/fish.png">
+            </div>
+        </div>
+        <div class="progress-bar-chart">
+            <div class="progress-bar"></div>
+        </div>
+    </div>
+
+</html>
+
