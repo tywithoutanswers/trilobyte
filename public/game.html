@@ -1,66 +1,98 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <style>
-            .fishing-GUI {
-                width: 45vh;
-                height: 90vh;
-                display: flex;
-                justify-self: center;
-                align-self: center;
-           } 
-           .capture {
-                background-color: brown;
-                width: 60%;
-                height: 100%;
-           }
-           .capture-zone {
-                background-color: green;
-                width: 40%;
-                height: 10%;
-                position: absolute;
-           }
-           .fish { 
-                position: absolute;
-           }
-           .progress-bar-chart {
-                background-color: burlywood;
-                width: 40%;
-                height: 100%;
-                display: flex;
-                align-items: flex-end;
-                justify-content: center;
-           }
-           .progress-bar {
-            background-color: green;
-            width: 70%;
-            height: 13%;
-           }
-        </style>
-        <link rel="stylesheet" href="game.css">
         <script>
-            fishx = 10;
-            function gameLoop() {
-
-                document.getElementsByClassName(fish).style.left = fishx + "px"
-                fishx++;
+            // CONSTANTS
+            FRAMERATE = 60;
+            GRAVITY = 0.01;
+            // VARIABLES
+            fish = {
+                y:0,
+                h:10,
+                dy:0,
+                element:NULL,
             }
-            window.setInterval(Gamepad,200);
-        </script>
-    </head>
-    
-    <title>Trilobyte Trawlers</title>
-    <div class="fishing-GUI">
-        <div class="capture">
-            <div class="capture-zone"></div>
-            <div class="fish">
-                <img src="game_assets/fish.png">
-            </div>
-        </div>
-        <div class="progress-bar-chart">
-            <div class="progress-bar"></div>
-        </div>
-    </div>
+            captureZone = {
+                y:0,
+                h:10,
+                dy:0,
+                element:NULL,
+            }
+            captureBound = {
+                y:0,
+                h:10,
+                element:NULL,
+            }
 
+            captureProgess = 3;
+            catpureZone.dy = 0; // positive values correspond to upwards movement
+            clicksThisFrame = 0;
+
+            function init() {
+                fish.element=document.getElementById("fish");
+                captureZone.element=document.getElementById("captureZone");
+                captureBound.getElementByID=document.getElementById("captureBound");
+                setInterval(gameloop,1000/FRAMERATE);
+            }
+            function gameloop() {
+                fish.y = 50 + Math.random() * 5;
+
+                catpureZone.dy -= GRAVITY;
+                captureZone.y += catpureZone.dy;
+                
+                updatePhysics();
+                updateHTML();
+
+
+                if (
+                    fish.y + fish.h > captureZone.y && fish.y + fish.h < captureZone.h
+                ) {
+                    captureProgess++;
+                    captureZone.element.style.background-color="red";
+                }
+            }
+
+            function updatePhysics() {
+                catpureZone.dy -= GRAVITY;
+                captureZone.y += catpureZone.dy;
+            }
+
+            function updateHTML() {
+                document.getElementById("fish").style.bottom = fish.h + "%";
+                captureZone.element = document.getElementById("captureZone")
+                captureZone.element.style.bottom = captureZone.h + "%";
+                captureZone.element.style.height = captureZoneSize + "%";
+                captureProgessElement = document.getElementById("captureProgess");
+                captureProgessElement.style.height = captureProgess + "%";
+            }
+
+            function reel() {
+                catpureZoneMomentum += 1;
+            }
+        </script>
+        <style>
+            .fishingGUI {
+                background-color: blue;
+            }
+            .captureZone {
+                background-color: beige;
+                position:relative;
+                width: 100px;
+                height: 0px;
+                left: 0px;
+                bottom: 0px;
+                z-index: 5; 
+            }
+        </style>
+    </head>
+    <body onload="init()">
+        <div onclick="reel()", class="fishingGUI", style="width: 50vh; height: 50vh; position:fixed ;">
+            <div id="captureZone", class="captureZone"></div>
+            <div id="fish", style="position:absolute; z-index: 10;" >
+                <img src="game_assets/fish.png"> 
+            </div>
+            <div id="captureProgess", class="captureProgess", style="background-color: aqua";></div>
+        </div>
+    </body>
 </html>
 
