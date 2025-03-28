@@ -10,6 +10,19 @@ captureProgress = 0; // Progress in % of catching the current fish.
 
 fishSpeed = 0.1; // Scaling factor for fish movement.
 
+const atlanticCod = {
+    name: "Atlantic Cod",
+    description: "insert description",
+    image: "game_assets/atlantic-cod_128.png",
+};
+
+const commonOctopus = {
+    name: "Common Octopus",
+    description: "insert description",
+    image: "game_assets/common-octopus_128.png",
+    movementFactor: 3
+};
+
 fishZone = {
     y : 0,
     dy : 2,
@@ -21,9 +34,17 @@ captureZone = {
     h : captureZoneSize
 }
 
+
+
 // Runs when the page is loaded starting into the gameloop
 function init() {
+    loadFish(atlanticCod);
     setInterval(gameloop,1000/FRAMERATE);
+}
+
+function loadFish(fishStatObject) {
+    document.getElementById("fishGraphic").src=fishStatObject.image;
+    if (typeof fishStatObject.movementFactor == "number") {fishSpeed = fishStatObject.movementFactor}
 }
 
 // Contains the code which is run each frame 
@@ -32,11 +53,15 @@ function gameloop() {
     updateHTML();
 }
 
-// Updates the postion of game objects
-function updatePhysics() {
+function moveFish() {
+    // fish's movement due to fish behaviour 
     fishZone.dy += Math.random() *fishSpeed;
     fishZone.dy -= Math.random() *fishSpeed;
+
+    // update position based on velocity
     fishZone.y += fishZone.dy;
+
+    // bounds check
     if (fishZone.y + fishZone.h > 100) {
         fishZone.y = 100 - fishZone.h;
         fishZone.dy *= -0.3;
@@ -45,7 +70,11 @@ function updatePhysics() {
         fishZone.y = 0;
         fishZone.dy *= -0.3;
     }
+}
 
+// Updates the postion of game objects
+function updatePhysics() {
+    moveFish();
     captureZone.dy -= GRAVITY;
     captureZone.y += captureZone.dy;
     if (captureZone.y + captureZone.h > 100) {
