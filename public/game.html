@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <script src="game.js"></script>
+        <style>
+            body {
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                height: 100vh;
+                margin: 0;
+            }
+            .container {
+                display: flex;
+                width: 300px; /* Adjust as needed */
+                height: 600px; /* Adjust as needed */
+                border: 1px solid #ccc;
+            }
+            .chart-container {
+                flex: 1;
+                display: flex;
+                justify-content: center;
+                align-items: center;
+                border: 1px solid #ccc;
+            }
+            .bar-chart {
+                width: 50px; /* Adjust bar width */
+                height: 80%; /* Adjust bar height */
+                background-color: lightblue;
+                border: 1px solid blue;
+                display: flex;
+                align-items: center;
+                justify-content: flex-end;
+                flex-direction: column;
+            }
+            .bar-fill {
+                width: 100%; /* Changed to 100% */
+                /* height set inline */
+                background-color: blue;
+            }
+            .rect-container {
+            flex:1;
+            position: relative; /* Important for positioning the bar and rectangle */
+            border: 1px solid black;
+            }
+            .rect {
+                width: 100%;
+                height: 100px;
+                background-color: red;
+                position: absolute;
+                display: flex;
+                justify-content: center; /* Centers horizontally */
+                align-items: center; /* Centers vertically */
+                left: 0px; /* Position relative to the bar */
+                bottom: 80px; /* Initial position at the top */
+            }
+        </style>
+    </head>
+    <body onload="init()">
+        <div class="container" onmousedown="reel(event);">
+            <div class="rect-container", style="flex: 1; display: flex; justify-content: center; align-items: center; border: 1px solid #ccc;">
+                <div class="rect", id="captureZone"></div>
+                <div class="rect", id="fishZone", style="bottom:500px; background-color: transparent;">
+                    <img src="fish.png", style="width: 50%;">
+                </div>
+            </div>
+            <div class="chart-container">
+                <bar class="bar-chart">
+                    <bar id="captureProgress", class="bar-fill" style="height:30%;"></bar>
+                </bar>
+            </div>
+        </div>
+    </body>
+</html>
+

@@ -1,0 +1,22 @@
+body{
+    background-image:url("water.jpeg");
+    
+}
+div{
+    background-color:aquamarine;
+    font-family:Arial, Helvetica, sans-serif;
+    font-size:18px;
+    text-align:center;
+    margin:auto;
+    padding:50px,500px,100px;
+}
+button{
+    background-color:turquoise;
+    color:blue;
+}
+form{
+    text-align:center;
+    border-color:black;
+    border-radius:4px;
+    color:red;
+}
