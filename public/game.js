@@ -1,7 +1,37 @@
-// CONSTANTS
+
+/***
+ *       _____                _              _       
+ *      / ____|              | |            | |      
+ *     | |     ___  _ __  ___| |_ __ _ _ __ | |_ ___ 
+ *     | |    / _ \| '_ \/ __| __/ _` | '_ \| __/ __|
+ *     | |___| (_) | | | \__ | || (_| | | | | |_\__ \
+ *      \_____\___/|_| |_|___/\__\__,_|_| |_|\__|___/
+ *                                                   
+ *                                                   
+ */
+
 FRAMERATE = 60;
 GRAVITY = 0.01;
-// VARIABLES
+
+const defaultFish = {
+    name: "Default Fish",
+    description: "missing description has been replaced by the description of the default fish",
+    image: "game_assets/fish.png",
+    movementFactor: 1,
+    movementType: "wiggle",
+    baseChance: 0,
+};
+
+/***
+ *     __      __        _       _     _          
+ *     \ \    / /       (_)     | |   | |         
+ *      \ \  / __ _ _ __ _  __ _| |__ | | ___ ___ 
+ *       \ \/ / _` | '__| |/ _` | '_ \| |/ _ / __|
+ *        \  | (_| | |  | | (_| | |_) | |  __\__ \
+ *         \/ \__,_|_|  |_|\__,_|_.__/|_|\___|___/
+ *                                               
+ */
+
 captureRate = 1; // How quickly captureProgress occurs in % per frame
 uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame 
 
@@ -9,19 +39,6 @@ captureZoneSize = 15; // Size of fish catching zone in % of total capture bar si
 captureProgress = 0; // Progress in % of catching the current fish.
 
 fishSpeed = 0.1; // Scaling factor for fish movement.
-
-const atlanticCod = {
-    name: "Atlantic Cod",
-    description: "insert description",
-    image: "game_assets/atlantic-cod_128.png",
-};
-
-const commonOctopus = {
-    name: "Common Octopus",
-    description: "insert description",
-    image: "game_assets/common-octopus_128.png",
-    movementFactor: 3
-};
 
 fishZone = {
     y : 0,
@@ -34,29 +51,134 @@ captureZone = {
     h : captureZoneSize
 }
 
+currentFish = {};
 
+fishList = { 
+
+    atlanticCod : {
+        name: "Atlantic Cod",
+        description: "insert description",
+        image: "game_assets/atlantic-cod_128.png",
+        baseChance: 100,
+    },
+
+    commonOctopus : {
+        name: "Common Octopus",
+        description: "insert description",
+        image: "game_assets/common-octopus_128.png",
+        movementFactor: 3,
+        baseChance: 50
+    }
+};
+
+fishCaught = {};
+
+/***
+ *      _____                 _                                      ______                _   _                 
+ *     |  __ \               | |                                    |  ____|              | | (_)                
+ *     | |__) |__ _ _ __   __| | ___  _ __ ___  _ __   ___ ___ ___  | |__ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+ *     |  _  // _` | '_ \ / _` |/ _ \| '_ ` _ \| '_ \ / _ / __/ __| |  __| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+ *     | | \ | (_| | | | | (_| | (_) | | | | | | | | |  __\__ \__ \ | |  | |_| | | | | (__| |_| | (_) | | | \__ \
+ *     |_|  \_\__,_|_| |_|\__,_|\___/|_| |_| |_|_| |_|\___|___|___/ |_|   \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+ *                                                                                                               
+ *                                                                                                               
+ */
+
+// int between min and max
+function randInt(min, max) {
+    return (Math.floor(Math.random() * max) + min);
+}
+
+// select fish based on weighted random draw, driven by their "baseChance" property.
+function selectFishByChance() {
+    chanceSum = 0;
+    for (field in fishList) {
+        chanceSum += fishList[field].baseChance ?? 0;
+    }
+    randomSelection = randInt(0, chanceSum);
+    console.log(randomSelection);
+    for (field in fishList) {
+        if (randomSelection < fishList[field].baseChance ?? 0) {
+            return fishList[field];
+        } else {
+            randomSelection -= fishList[field].baseChance ?? 0;
+            console.log("%d",randomSelection);
+        }
+    }
+    console.error("Something went wrong when selecting a fish by chance");
+    return defaultFish;
+}
+
+/***
+ *       _____                         __                  _   _                 
+ *      / ____|                       / _|                | | (_)                
+ *     | |  __  __ _ _ __ ___   ___  | |_ _   _ _ __   ___| |_ _  ___  _ __  ___ 
+ *     | | |_ |/ _` | '_ ` _ \ / _ \ |  _| | | | '_ \ / __| __| |/ _ \| '_ \/ __|
+ *     | |__| | (_| | | | | | |  __/ | | | |_| | | | | (__| |_| | (_) | | | \__ \
+ *      \_____|\__,_|_| |_| |_|\___| |_|  \__,_|_| |_|\___|\__|_|\___/|_| |_|___/
+ *                                                                               
+ *                                                                               
+ */
 
 // Runs when the page is loaded starting into the gameloop
 function init() {
-    loadFish(atlanticCod);
+    loadFishAsCurrent(selectFishByChance());
     setInterval(gameloop,1000/FRAMERATE);
 }
 
-function loadFish(fishStatObject) {
-    document.getElementById("fishGraphic").src=fishStatObject.image;
-    if (typeof fishStatObject.movementFactor == "number") {fishSpeed = fishStatObject.movementFactor}
+function newEncounter() {
+    captureZone.y = 0;
+    captureZone.dy = 0;
+    fishZone.y = 0;
+    fishZone.dy = 0;
+    loadFishAsCurrent(selectFishByChance());
+}
+
+function mergeFishWithDefault(fishData) {
+    for (const field in defaultFish) { 
+        if ( !fishData.hasOwnProperty() ) {
+            fishData[field] = defaultFish[field];
+        }
+    }
+}
+
+function loadFishAsCurrent(fishData) {
+    // Iterates over
+    currentFish = {}; 
+    for (const field in defaultFish) { 
+        currentFish[field] = defaultFish[field];
+    }
+    for (const field in fishData) {
+        currentFish[field] = fishData[field];
+    }
+    document.getElementById("fishGraphic").src=currentFish.image;
 }
 
 // Contains the code which is run each frame 
 function gameloop() {
     updatePhysics();
     updateHTML();
+    if (captureProgress >= 100) {
+        captureProgress = 0;
+        fishCaught[currentFish.name] ??= 0;
+        fishCaught[currentFish.name] += 1;
+        newEncounter();
+    }
 }
 
 function moveFish() {
-    // fish's movement due to fish behaviour 
-    fishZone.dy += Math.random() *fishSpeed;
-    fishZone.dy -= Math.random() *fishSpeed;
+     // fish's movement due to fish behaviour 
+    switch (currentFish.movementType) {
+        case "wiggle": 
+        fishZone.dy += Math.random() *fishSpeed;
+        fishZone.dy -= Math.random() *fishSpeed;
+        break;
+        case "none":
+        break;
+        default:
+        console.log("movement type missing for current fish");
+    }
+   
 
     // update position based on velocity
     fishZone.y += fishZone.dy;
@@ -113,10 +235,21 @@ function updateHTML() {
 
     captureProgressElement = document.getElementById("captureProgress");
     captureProgressElement.style.height = captureProgress + "%";
+
+    testing = document.getElementById("testingParagraph");
+    testing.innerHTML = "";
+    for (field in fishCaught) {
+        testing.innerHTML += field + ":" + fishCaught[field] + "<br>";
+    }
+
 }
 
 // Prevents default click behaviour
+function preventDefault(event) {
+    event.preventDefault;
+}
+
 function reel(event) {
-    event.preventDefault(event);
+    //event.preventDefault(event);
     captureZone.dy += 1;
 }
