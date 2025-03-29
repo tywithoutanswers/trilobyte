@@ -33,6 +33,6 @@ img{
     width:150px;
     height:100px;
 }
-fishdiv{
-    height:2500px;
+#fishdiv{
+    background: linear-gradient( rgba(112, 253, 255, 1), rgba(91, 210, 186, 1));
 }
