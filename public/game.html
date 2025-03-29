@@ -3,23 +3,90 @@
     <head>
         <script src="game.js"></script>
         <link rel="stylesheet" href="game.css">
+        <style>
+        body {
+            display: flex;
+            justify-content: center;
+            background-color: aquamarine;
+        }
+
+        #gameUIContainer {
+            display: flex;
+            position: relative;
+            width: 20vh;
+            height: 80vh;
+            margin: 20px;
+        }
+
+        #encounterChart {
+            flex: 2 25px;
+            width: 100%;
+            display: flex;
+            position: relative;
+            align-items: flex-end;
+            border: 1px solid black;
+        }
+
+        #progressChart {
+            flex: 1 25px;
+            width: 100%;
+            display: flex;
+            position: relative;
+            align-items: flex-end;
+            border: 1px solid black;
+        }
+
+        #progressBar {
+            position: absolute;
+            background-color: blue;
+            width: inherit;
+            height: 60%;
+        }
+        
+        #captureZone {
+            position: absolute;
+            background-color: blue;
+            width: inherit;
+            height: 10%;
+        }
+
+        #fishZone {
+            position: absolute;
+            width: inherit;
+            height: 10%;
+            bottom: 10%;
+
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #fishGraphic {
+            position: absolute;
+            width: 64px;
+            height: 64px;
+            z-index: 100;
+        }
+
+
+        
+        </style>
     </head>
-    <body onload="init()">
-        <div class="container" onmousedown="reel(event);">
-            <div class="rect-container", style="flex: 1; display: flex; justify-content: center; align-items: center; border: 1px solid #ccc;">
-                <div class="rect", id="captureZone"></div>
-                <div class="rect", id="fishZone", style="bottom:500px; background-color: transparent;">
-                    <img id="fishGraphic", style="width: 50%;">
+    <body onload="init()", onmousedown="reel(event);">
+        <div id="gameUIContainer">
+
+            <div id="encounterChart">
+                <div id="captureZone"></div>
+                <div id="fishZone">
+                    <img id="fishGraphic", src="game_assets/fish.png">
                 </div>
             </div>
-            <div class="chart-container">
-                <bar class="bar-chart">
-                    <bar id="captureProgress", class="bar-fill" style="height:30%;"></bar>
-                </bar>
+
+            <div id="progressChart">
+                <div id="progressBar"></div>
             </div>
+
         </div>
-        <button id="testingButton">clickme</button>
-        <p id="testingParagraph">lolololol</p>
     </body>
 </html>
 

@@ -17,7 +17,7 @@ const defaultFish = {
     name: "Default Fish",
     description: "missing description has been replaced by the description of the default fish",
     image: "game_assets/fish.png",
-    movementFactor: 1,
+    movementFactor: 0.1,
     movementType: "wiggle",
     baseChance: 0,
 };
@@ -37,8 +37,6 @@ uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame
 
 captureZoneSize = 15; // Size of fish catching zone in % of total capture bar size. Recommended not to exceed 15%
 captureProgress = 0; // Progress in % of catching the current fish.
-
-fishSpeed = 0.1; // Scaling factor for fish movement.
 
 fishZone = {
     y : 0,
@@ -66,7 +64,7 @@ fishList = {
         name: "Common Octopus",
         description: "insert description",
         image: "game_assets/common-octopus_128.png",
-        movementFactor: 3,
+        movementFactor: 0.3,
         baseChance: 50
     }
 };
@@ -170,8 +168,8 @@ function moveFish() {
      // fish's movement due to fish behaviour 
     switch (currentFish.movementType) {
         case "wiggle": 
-        fishZone.dy += Math.random() *fishSpeed;
-        fishZone.dy -= Math.random() *fishSpeed;
+        fishZone.dy += Math.random() * currentFish.movementFactor;
+        fishZone.dy -= Math.random() * currentFish.movementFactor;
         break;
         case "none":
         break;
@@ -215,11 +213,11 @@ function updatePhysics() {
     ) {
         // Success, increment captureProgress and show positive capture colour
         captureProgress+=captureRate;
-        document.getElementById("captureProgress").style = "background-color: green;";
+        document.getElementById("progressBar").style = "background-color: green;";
     } else {
         // Failure, decrement captureProgress and show negative capture colour
         captureProgress-=uncaptureRate;
-        document.getElementById("captureProgress").style = "background-color: blue;";
+        document.getElementById("progressBar").style = "background-color: blue;";
     }
 }
 
@@ -233,15 +231,16 @@ function updateHTML() {
     captureZoneElement.style.bottom = captureZone.y + "%";
     captureZoneElement.style.height = captureZone.h + "%";
 
-    captureProgressElement = document.getElementById("captureProgress");
-    captureProgressElement.style.height = captureProgress + "%";
+    progressBar = document.getElementById("progressBar");
+    progressBar.style.height = captureProgress + "%";
 
+    /*
     testing = document.getElementById("testingParagraph");
     testing.innerHTML = "";
     for (field in fishCaught) {
         testing.innerHTML += field + ":" + fishCaught[field] + "<br>";
     }
-
+    */
 }
 
 // Prevents default click behaviour
