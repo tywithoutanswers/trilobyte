@@ -3,7 +3,7 @@ import { getFirestore, collection, addDoc, getDocs, doc, setDoc } from "firebase
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut} from 'firebase/auth';
 
 const firebaseConfig = {
-  apiKey: "AIzaSyB9EKMnm56WYp4Z3-wl9ACjt075sVPtcRk",
+  apiKey: "x",
   authDomain: "trilobyte-4467e.firebaseapp.com",
   projectId: "trilobyte-4467e",
   storageBucket: "trilobyte-4467e.firebasestorage.app",
