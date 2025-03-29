@@ -1,0 +1,77 @@
+<html>
+    <head>
+        <title>Species of fish</title>
+        <link rel="stylesheet" href="fishstyle.css">
+        <script>
+            function goldfish(){
+            document.getElementById('fishdesc').innerHTML="This is the elusive gold fish.It is extremely rare and may not actually exist.<br>It is literally made out of gold"
+         }
+         function trilobite(){
+            document.getElementById('fishdesc').innerHTML="The trilobite was a type of marine arthopod that lived from the Cambrian to the Permian eras.<br>It apparently went extinct around 270 million years ago although specimens have been reported in Irish waters"
+         }
+        function bluefin_tuna(){
+            document.getElementById('fishdesc').innerHTML="The Atlantic Bluefin Tuna is found in the Atlantic Ocean off the coast of Ireland<br>Prized for its meat, it is one of the most expensive species of fish"
+        }
+        function jellyfish(){
+            document.getElementById('fishdesc').innerHTML="The Compass Jellyfish is the most common species of jellyfish found in Irish coastal waters<br>Its stings are painful to humans and can be deadly"
+        }
+        function euro_bass(){
+            document.getElementById('fishdesc').innerHTML="The European bass is a type of sea bass found off the Atlantic coast<br>It is a victim of overfishing and numbers in the atlantic have been decreasing"
+        }
+        function cod(){
+            document.getElementById('fishdesc').innerHTML="The Atlantic Cod is a large fish found off the Atlantic Coast<br>It has a mild taste and is the most popular fish used in fish and chips"
+        }
+        function anchovy(){
+            document.getElementById('fishdesc').innerHTML="The European Anchovy is a tiny fish found in the Mediterranean sea<br>It has a salty taste and is commonly used as a pizza topping"
+        }
+        function flounder(){
+            document.getElementById('fishdesc').innerHTML="The European Flounder is a flatfish found in European coastal waters<br>It has two eyes on the side of its head and can change color to suit its background"
+        }
+        function crab(){
+            document.getElementById('fishdesc').innerHTML="The brown crab is a crab found on the shores of Ireland<br>It is nocturnal, foraging for prey at night"
+        }
+        function octopus(){
+            document.getElementById('fishdesc').innerHTML="The common octopus is a mollusc found in the Mediterranean sea and of the southern coast of England<br>It can change color to attract prey"
+        }
+        function salmon(){
+            document.getElementById('fishdesc').innerHTML="The atlantic salmon is a medium-sized fish that can be found in Irish Atlantic waters.<br>It hatches in streams and rivers and swims downstream to the sea when mature"
+        }
+        function basking_shark(){
+            document.getElementById('fishdesc').innerHTML="The basking shark is the second-largest living shark, found all over the worlds oceans<br>It can eat large amounts of plankton with its unique mouth" 
+        }
+        function prawn(){
+            document.getElementById('fishdesc').innerHTML="The Dublin Bay Prawn is a crustacean that can be found off Irish shores<br> It is also known as the langostine or scampi"
+        }
+        </script>
+    </head>
+    <body>
+        
+    <div>
+        <h1>The Species of Fish</h1>
+        <h3>Click for more information</h3>
+    </div>
+   <img src="gold_fish.webp" id="gold_fish" onclick="goldfish()">
+   <img src="trilobite.jpg" id="trilobite" onclick="trilobite()">
+   <img src="atlantic_bluefin_tuna.jpg" id="tuna" onclick="bluefin_tuna()">
+   <img src="jellyfish.jpg" id="jellyfish" onclick="jellyfish()">
+   <img src="euro_bass.jpg" id="european_bass" onclick="euro_bass()">
+   <img src="cod.jpeg" id="atlantic_cod" onclick="cod()">
+   <img src="anchovy.jpeg" id="european_anchovy" onclick="anchovy()"><br>
+   <img src="flounder.jpeg" id="european_flounder" onclick="flounder()">
+   <img src="brown_crab.jpeg" id="brown_crab" onclick="crab()">
+   <img src="octopus.jpg" id="common_octopus" onclick="octopus()">
+   <img src="salmon.jpeg" id="atlantic_salmon" onclick="salmon()">
+   <img src="basking_shark.jpg" id="basking_shark" onclick="basking_shark()">
+   <img src="dublin_bay_prawn.jpeg" id="dublin_bay_prawn" onclick="prawn()">
+   <div id="fishdiv">
+    <span id="fishdesc">
+
+    </span><br>
+    <button onclick=" window.location.href='index.html'">Go back</button>
+   </div>
+
+
+
+
+    </body>        
+</html>    
