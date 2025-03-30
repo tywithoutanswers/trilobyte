@@ -1,9 +1,9 @@
 body{
-    background-image:url("water.jpeg");
+    background-image:url("deep_ocean.webp");
     
 }
 div{
-    background: linear-gradient( rgba(91, 210, 186, 1), rgba(112, 253, 255, 1));
+    background: linear-gradient( rgba(112, 253, 255, 1), rgba(91, 210, 186, 1));
     font-family:Georgia, 'Times New Roman', Times, serif;
     font-size:18px;
     text-align:center;
@@ -34,5 +34,5 @@ img{
     height:100px;
 }
 #fishdiv{
-    background: linear-gradient( rgba(112, 253, 255, 1), rgba(91, 210, 186, 1));
+    background: linear-gradient( rgba(91, 210, 186, 1), rgba(112, 253, 255, 1));
 }
