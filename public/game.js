@@ -14,13 +14,24 @@ FRAMERATE = 60;
 GRAVITY = 0.02;
 
 const defaultFish = {
+    /*basic info*/
     name: "Default Fish",
     description: "missing description has been replaced by the description of the default fish",
     image: "game_assets/fish.png",
-    speed: 0.1,
-    edgeRepulsion: 0.5, 
-    movement: "wiggle",
-    baseChance: 0,
+
+    baseChance: 0, // chance to randomly appear
+    pointValue: 1,
+
+    /*behavior*/
+    wiggleStrength : 0.1, //0.01 - 0.5
+    gravity : 0, // constant downwards accel
+    feistynessMult : 1.1, // linear multiplier for speed based on current capture progress
+    edgeRepel : 0.1, // force applied away from an edge when within 10 units of it
+    captureRateMult : 1, // multiplier for how long it takes a fish to capture 
+    lungeChance: 0.01, // 0.001 - 0.01 chance to gain a large burst of speed each frame 
+    lungePower: 1, // [1-4] power of a lunge 
+    lungeIsJump: false,
+    drag: 0.01,
 };
 
 /***
@@ -40,6 +51,8 @@ uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame
 
 captureZoneSize = 15; // Size of fish catching zone in % of total capture bar size. Recommended not to exceed 15%
 captureProgress = 0; // Progress in % of catching the current fish.
+
+encounterFrameTimer = 0.5;
 
 fishZone = {
     y : 0,
@@ -61,15 +74,55 @@ fishList = {
         description: "insert description",
         image: "game_assets/atlantic-cod_128.png",
         baseChance: 100,
+        pointValue: 50,
     },
 
     commonOctopus : {
         name: "Common Octopus",
         description: "insert description",
         image: "game_assets/common-octopus_128.png",
-        speed: 0.3,
+        baseChance: 20,
+        pointValue: 120,
+        
+        wiggleStrength: 0.3,
+        feistynessMult: 0.5,
+    },
+
+    brownCrab : {
+        name: "Brown Crab",
+        description: "insert description",
+        image: "game_assets/brown_crab.jpeg",
         baseChance: 50,
-    }
+        pointValue: 40,
+
+        wiggleStrength: 0,
+        edgeRepel: 0.01,
+        gravity: 0.04,
+        lungeChance: 0.015,
+        lungePower: 2.4,
+        drag : 0.05,
+        lungeIsJump: true,
+    },
+
+    goldFish : {
+        name: "The Gold Fish",
+        description: "missing description has been replaced by the description of the default fish",
+        image: "game_assets/fish.png",
+
+        baseChance: 1000.1, // chance to randomly appear
+        pointValue: 1000,
+
+        /*behavior*/
+        wiggleStrength : 0.4, //0.01 - 0.5
+        gravity : 0, // constant downwards accel
+        feistynessMult : 6.0, // linear multiplier for speed based on current capture progress
+        edgeRepel : 0.3, // force applied away from an edge when within 10 units of it
+        captureRateMult : 0.3, // multiplier for how long it takes a fish to capture 
+        lungeChance: 0.01, // 0.001 - 0.01 chance to gain a large burst of speed each frame 
+        lungePower: 0, // [1-4] power of a lunge 
+        lungeIsJump: false,
+        drag: 0.1,
+        }  
 };
 
 fishCaught = {};
@@ -111,7 +164,11 @@ function selectFishByChance() {
 }
 
 function randomApproxNorm(min,max,n) {
-    return 0;
+    sum = 0;
+    for (i=0; i<n; i++) {
+        sum += randInt(min,max);
+    }
+    return sum / n;
 }
 
 /***
@@ -127,18 +184,12 @@ function randomApproxNorm(min,max,n) {
 
 // Runs when the page is loaded starting into the gameloop
 function init() {
-    for (let i = 0; i < 100; i+=1) {
-        console.log("%d",randomApproxNorm(0,100,10));
-    }
-
     loadFishAsCurrent(selectFishByChance());
     setInterval(gameloop,1000/FRAMERATE);
 }
 
 function newEncounter() {
-    captureZone.y = 0;
-    captureZone.dy = 0;
-    fishZone.y = 0;
+    fishZone.y = randInt(0,100);
     fishZone.dy = 0;
     loadFishAsCurrent(selectFishByChance());
 }
@@ -167,9 +218,6 @@ function loadFishAsCurrent(fishData) {
 
 // Contains the code which is run each frame 
 function gameloop() {
-    
-
-
     if (reeling) {
         captureZone.dy = Math.min(1, captureZone.dy + 0.1);
     }
@@ -186,30 +234,31 @@ function gameloop() {
 }
 
 function moveFish() {
-     // fish's movement due to fish behaviour 
-    switch (currentFish.movement) {
-        case "wiggle": 
-        
-        fishZone.dy += Math.random() * currentFish.speed;
-        fishZone.dy -= Math.random() * currentFish.speed;
+    motion = 0;
+    //wiggle
+    motion += currentFish.wiggleStrength * Math.random();
+    motion -= currentFish.wiggleStrength * Math.random();
+    //edge repel
+    //wiggle
+    if (fishZone.y < 10) motion += currentFish.edgeRepel * Math.random();
+    if (fishZone.y + fishZone.h > 90) motion -= currentFish.edgeRepel * Math.random();
 
-        if (fishZone.y > 75) {
-            fishZone.dy -= Math.random() * currentFish.edgeRepulsion
+    //lunge
+    if (Math.random() < currentFish.lungeChance) {
+        if (currentFish.lungeIsJump || Math.random > 0.5) {
+            motion += currentFish.lungePower;
+        } else {
+            motion -= currentFish.lungePower;
         }
-        if (fishZone.y + fishZone.h < 25) {
-            fishZone.dy += Math.random() * currentFish.edgeRepulsion
-        }
-
-        fishZone.dy *= 0.99;
-        fishZone.dy *= 0.99;
-
-        break;
-        case "none":
-        break;
-        default:
-        console.log("movement type missing for current fish");
     }
-   
+    //feistyness
+    motion *= 1 + ( (currentFish.feistynessMult - 1) * (captureProgress / 100) );
+    //gravity 
+    motion -= currentFish.gravity;
+
+    fishZone.dy *= 1 - currentFish.drag;
+    fishZone.dy += motion;
+
 
     // update position based on velocity
     fishZone.y += fishZone.dy;
@@ -245,11 +294,11 @@ function updatePhysics() {
         fishZone.y < captureZone.y + captureZone.h //If the bottom of the fishzone bound is bellow the top of the capture zone 
     ) {
         // Success, increment captureProgress and show positive capture colour
-        captureProgress+=captureRate;
+        captureProgress+= captureRate * currentFish.captureRateMult;
         document.getElementById("progressBar").style = "background-color: green;";
     } else {
         // Failure, decrement captureProgress and show negative capture colour
-        captureProgress-=uncaptureRate;
+        captureProgress-=uncaptureRate * currentFish.captureRateMult;
         document.getElementById("progressBar").style = "background-color: blue;";
     }
 }
@@ -277,14 +326,17 @@ function updateHTML() {
 }
 
 // Prevents default click behaviour
-function preventDefault(event) {
-    event.preventDefault;
-}
 
 function startReel(event) {
+    event.preventDefault();
     reeling = true;
 }
 
 function stopReel(event) {
+    event.preventDefault();
     reeling = false;
+}
+
+function preventDefault(event) {
+    event.preventDefault();
 }
