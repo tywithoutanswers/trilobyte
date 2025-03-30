@@ -11,14 +11,15 @@
  */
 
 FRAMERATE = 60;
-GRAVITY = 0.01;
+GRAVITY = 0.02;
 
 const defaultFish = {
     name: "Default Fish",
     description: "missing description has been replaced by the description of the default fish",
     image: "game_assets/fish.png",
-    movementFactor: 0.1,
-    movementType: "wiggle",
+    speed: 0.1,
+    edgeRepulsion: 0.5, 
+    movement: "wiggle",
     baseChance: 0,
 };
 
@@ -32,7 +33,9 @@ const defaultFish = {
  *                                               
  */
 
-captureRate = 1; // How quickly captureProgress occurs in % per frame
+reeling = false;
+
+captureRate = 0.5; // How quickly captureProgress occurs in % per frame
 uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame 
 
 captureZoneSize = 15; // Size of fish catching zone in % of total capture bar size. Recommended not to exceed 15%
@@ -64,8 +67,8 @@ fishList = {
         name: "Common Octopus",
         description: "insert description",
         image: "game_assets/common-octopus_128.png",
-        movementFactor: 0.3,
-        baseChance: 50
+        speed: 0.3,
+        baseChance: 50,
     }
 };
 
@@ -107,6 +110,10 @@ function selectFishByChance() {
     return defaultFish;
 }
 
+function randomApproxNorm(min,max,n) {
+    return 0;
+}
+
 /***
  *       _____                         __                  _   _                 
  *      / ____|                       / _|                | | (_)                
@@ -120,6 +127,10 @@ function selectFishByChance() {
 
 // Runs when the page is loaded starting into the gameloop
 function init() {
+    for (let i = 0; i < 100; i+=1) {
+        console.log("%d",randomApproxNorm(0,100,10));
+    }
+
     loadFishAsCurrent(selectFishByChance());
     setInterval(gameloop,1000/FRAMERATE);
 }
@@ -152,8 +163,16 @@ function loadFishAsCurrent(fishData) {
     document.getElementById("fishGraphic").src=currentFish.image;
 }
 
+
+
 // Contains the code which is run each frame 
 function gameloop() {
+    
+
+
+    if (reeling) {
+        captureZone.dy = Math.min(1, captureZone.dy + 0.1);
+    }
     updatePhysics();
     updateHTML();
     if (captureProgress >= 100) {
@@ -161,15 +180,29 @@ function gameloop() {
         fishCaught[currentFish.name] ??= 0;
         fishCaught[currentFish.name] += 1;
         newEncounter();
+    } else if (captureProgress < 1) {
+        captureProgress = 1;
     }
 }
 
 function moveFish() {
      // fish's movement due to fish behaviour 
-    switch (currentFish.movementType) {
+    switch (currentFish.movement) {
         case "wiggle": 
-        fishZone.dy += Math.random() * currentFish.movementFactor;
-        fishZone.dy -= Math.random() * currentFish.movementFactor;
+        
+        fishZone.dy += Math.random() * currentFish.speed;
+        fishZone.dy -= Math.random() * currentFish.speed;
+
+        if (fishZone.y > 75) {
+            fishZone.dy -= Math.random() * currentFish.edgeRepulsion
+        }
+        if (fishZone.y + fishZone.h < 25) {
+            fishZone.dy += Math.random() * currentFish.edgeRepulsion
+        }
+
+        fishZone.dy *= 0.99;
+        fishZone.dy *= 0.99;
+
         break;
         case "none":
         break;
@@ -206,10 +239,10 @@ function updatePhysics() {
         captureZone.dy *= -0.5;
     }
 
-    // Check if the current fish is fully inside the capture zone.
+    // Check if the current fish intersects the capture zone
     if (
-        fishZone.y > captureZone.y && //If the bottom of the fish bound is above the bottom of the capturezone bound 
-        fishZone.y + fishZone.h < captureZone.y + captureZone.h //If the top of the fishzone bound is bellow the top of the capture zone 
+        fishZone.y + fishZone.h > captureZone.y && //If the top of the fish bound is above the bottom of the capturezone bound 
+        fishZone.y < captureZone.y + captureZone.h //If the bottom of the fishzone bound is bellow the top of the capture zone 
     ) {
         // Success, increment captureProgress and show positive capture colour
         captureProgress+=captureRate;
@@ -248,7 +281,10 @@ function preventDefault(event) {
     event.preventDefault;
 }
 
-function reel(event) {
-    //event.preventDefault(event);
-    captureZone.dy += 1;
+function startReel(event) {
+    reeling = true;
+}
+
+function stopReel(event) {
+    reeling = false;
 }

@@ -72,7 +72,7 @@
         
         </style>
     </head>
-    <body onload="init()", onmousedown="reel(event);">
+    <body onload="init()", onmousedown="startReel(event);", onmouseup="stopReel(event);">
         <div id="gameUIContainer">
 
             <div id="encounterChart">
@@ -85,8 +85,9 @@
             <div id="progressChart">
                 <div id="progressBar"></div>
             </div>
-
+            
         </div>
+        <div id="test", style="max-width: 100px;"></div>
     </body>
 </html>
 
