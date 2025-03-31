@@ -4,12 +4,12 @@ body{
 }
 div{
     background: linear-gradient( rgb(118, 189, 190), rgb(133, 186, 238));
+    width:80%;
     font-family:Georgia, 'Times New Roman', Times, serif;
     font-size:18px;
     text-align:center;
     color:rgb(5, 19, 34);
     margin:auto;
-    padding:50px,500px,100px;
     border-radius:25px;
 }
 button{
