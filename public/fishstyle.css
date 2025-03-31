@@ -10,6 +10,7 @@ div{
     color:rgb(5, 19, 34);
     margin:auto;
     padding:50px,500px,100px;
+    border-radius:25px;
 }
 button{
     background-color:aqua;
@@ -30,8 +31,12 @@ img{
 }
 #fishdiv{
     background: linear-gradient( rgb(133,186,238), rgb(118,189,190));
+    border-radius:0px 0px 25px 25px;
 }
 ul{
     font-size:25px;
     text-align:center;
+}
+#imgdiv{
+    border-radius:25px 25px 0px 0px;
 }
