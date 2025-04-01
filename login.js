@@ -1,39 +1,15 @@
-import { auth, db, doc, setDoc, signInWithEmailAndPassword, createUserWithEmailAndPassword } from '@/firebase';
-
-export function renderFishLogin() {
+import { auth, signInWithEmailAndPassword} from '@/firebase';
+export async function renderFishLogin() {
   const app = document.getElementById('app');
-  app.innerHTML = `
-    <div class="login">
-      <h2>Login here!</h2>
-      <form id="login-form">
-        <label for="email">Email:</label>
-        <input type="email" id="email" required />
-        <br />
-        <label for="password">Password:</label>
-        <input type="password" id="password" required />
-        <br />
-        <button type="submit">Login</button>
-      </form>
-
-      <h2>Sign Up</h2>
-      <form id="signup-form">
-        <label for="signup-username">Username:</label>
-        <input type="text" id="signup-username" required />
-        <br />
-        <label for="signup-email">Email:</label>
-        <input type="email" id="signup-email" required />
-        <br />
-        <label for="signup-password">Password:</label>
-        <input type="password" id="signup-password" required />
-        <br />
-        <button type="submit">Sign Up</button>
-      </form>
-
-      <br />
-      <a href="#" id="back-link">Go back</a>
-    </div>
-  `;
-
+  try {
+    const response = await fetch('/pages/login.html');
+    if (!response.ok) throw new Error('Failed to load login.html');
+    app.innerHTML = await response.text();
+  } catch (error) {
+    console.error('Error loading login template:', error);
+    app.innerHTML = '<p>Error loading login page.</p>';
+    return;
+  }
 
   const loginForm = document.getElementById('login-form');
   if (loginForm) {
@@ -52,34 +28,7 @@ export function renderFishLogin() {
       }
     });
   } else {
-    console.error('Login form Error: Element with ID "login-form" not found.');
-  }
-
-  const signupForm = document.getElementById('signup-form');
-  if (signupForm) {
-    signupForm.addEventListener('submit', async (e) => {
-      e.preventDefault();
-      const username = document.getElementById('signup-username').value;
-      const email = document.getElementById('signup-email').value;
-      const password = document.getElementById('signup-password').value;
-      try {
-        const userCredential = await createUserWithEmailAndPassword(auth, email, password);
-        const user = userCredential.user;
-        await setDoc(doc(db, 'users', user.uid), {
-          username,
-          email,
-          createdAt: new Date().toISOString(),
-        });
-        alert('Sign up successful You are now logged in.');
-        window.history.pushState({}, '', '/');
-        renderPage();
-      } catch (error) {
-        console.error('Sign up error:', error);
-        alert('Sign up failed: ' + (error.message || 'An unexpected error occurred during sign up'));
-      }
-    });
-  } else {
-    console.error('Signup form Error');
+    console.error('Login form not found in the DOM');
   }
 
   const backLink = document.getElementById('back-link');
@@ -90,6 +39,6 @@ export function renderFishLogin() {
       renderPage();
     });
   } else {
-    console.error('Back link Error');
+    console.error('Back link not found in the DOM');
   }
 }
