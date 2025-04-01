@@ -1,38 +1,42 @@
 body{
     background-image:url("water.jpeg");
-    
+    background-size:1600px,3000px;
 }
 div{
-    background: linear-gradient( rgba(91, 210, 186, 1), rgba(112, 253, 255, 1));
+    background: linear-gradient( rgb(118, 189, 190), rgb(133, 186, 238));
+    width:80%;
     font-family:Georgia, 'Times New Roman', Times, serif;
     font-size:18px;
     text-align:center;
-    color:indigo;
+    color:rgb(5, 19, 34);
     margin:auto;
-    padding:50px,500px,100px;
+    border-radius:25px;
 }
 button{
-    background-color:turquoise;
+    background-color:aqua;
     color:blue;
 }
 button:hover{
-    background-color:maroon;
-    color:white;
-}
-button:active{
-    background-color:orange;
-    color:black;
+    background-color:teal;
+    color:blue;
 }
 form{
     text-align:center;
     border-color:black;
     border-radius:4px;
-    color:red;
 }
 img{
     width:150px;
     height:100px;
 }
 #fishdiv{
-    background: linear-gradient( rgba(112, 253, 255, 1), rgba(91, 210, 186, 1));
+    background: linear-gradient( rgb(133,186,238), rgb(118,189,190));
+    border-radius:0px 0px 25px 25px;
+}
+ul{
+    font-size:25px;
+    text-align:center;
+}
+#imgdiv{
+    border-radius:25px 25px 0px 0px;
 }

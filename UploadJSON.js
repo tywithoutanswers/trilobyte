@@ -1,15 +1,34 @@
-import { auth, db, collection, addDoc, getDocs, doc, onAuthStateChanged } from '@/firebase';
+import { auth, db, collection, getDocs, doc, onAuthStateChanged, getDoc, setDoc } from '@/firebase';
+
+const fishList = window.fishList;
+const fishCaught = window.fishCaught;
 
 export function renderUploadJSON() {
   const uploadSection = document.getElementById('upload-section');
   if (!uploadSection) {
-    console.error('Error');
+    console.error('Upload section not found in the DOM');
     return;
   }
 
   let user = null;
-  onAuthStateChanged(auth, (currentUser) => {
+  let userName = '';
+  let userEmail = '';
+
+  onAuthStateChanged(auth, async (currentUser) => {
     user = currentUser;
+    if (user) {
+      const userDocRef = doc(db, 'users', user.uid);
+      const userDoc = await getDoc(userDocRef);
+      if (userDoc.exists()) {
+        const userData = userDoc.data();
+        userName = userData.username || 'Unknown';
+        userEmail = userData.email || user.email || 'Unknown';
+      } else {
+        console.error('User document not found in Firestore');
+        userName = 'Unknown';
+        userEmail = user.email || 'Unknown';
+      }
+    }
     updateUploadUI();
   });
 
@@ -26,7 +45,7 @@ export function renderUploadJSON() {
           renderPage();
         });
       } else {
-        console.error('Error');
+        console.error('Upload login link not found in the DOM');
       }
       return;
     }
@@ -34,101 +53,46 @@ export function renderUploadJSON() {
     uploadSection.innerHTML = `
       <div class="upload-json">
         <h2>JSON Upload to Firebase</h2>
-        <input type="file" id="json-file" accept=".json" />
-        <button id="upload-button">Upload to Firebase</button>
-        <button id="upload-sample-button">Upload Sample JSON</button>
+        <p>Welcome, ${userName}!</p>
+        <button id="upload-sample-button">Upload Game Data</button>
         <button id="load-button">Load Data</button>
         <div id="data-display"></div>
       </div>
     `;
 
-    const fileInput = document.getElementById('json-file');
-    if (fileInput) {
-      fileInput.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            try {
-              window.jsonData = JSON.parse(e.target.result);
-              console.log('Parsed JSON from file input:', window.jsonData);
-            } catch (error) {
-              console.error('Error parsing JSON from file input:', error);
-              alert('Invalid JSON file: ' + error.message);
-              window.jsonData = [];
-            }
-          };
-          reader.readAsText(file);
-        }
-      });
-    } else {
-      console.error('JSON file Error');
-    }
-
-    const uploadButton = document.getElementById('upload-button');
-    if (uploadButton) {
-      uploadButton.addEventListener('click', async () => {
-        try {
-          if (!user) {
-            alert('Please sign in to upload data.');
-            return;
-          }
-          if (!window.jsonData || !window.jsonData.length) {
-            alert('No data to upload. Please select a valid JSON file.');
-            return;
-          }
-          const userDocRef = doc(db, 'users', user.uid);
-          const dataCollection = collection(userDocRef, 'playerData');
-          for (const row of window.jsonData) {
-            if (Object.keys(row).length === 0) continue;
-            await addDoc(dataCollection, row);
-          }
-          alert('JSON Data uploaded to Firebase!');
-        } catch (error) {
-          console.error('Upload failed:', error);
-          alert('Failed to upload JSON data: ' + error.message);
-        }
-      });
-    } else {
-      console.error('Upload button Error');
-    }
-
     const sampleButton = document.getElementById('upload-sample-button');
     if (sampleButton) {
       sampleButton.addEventListener('click', async () => {
         try {
-          const sampleData = [
-            {
-              userID: 1,
-              name: "John Doe",
-              email: "placeholder@placeholder.ie",
-              totalscore: 0,
-              totalfish: 0,
-              trilobites: 0,
-              cod: 0,
-              salmon: 0,
-              trouts: 0,
-            },
-          ];
-          window.jsonData = sampleData;
+          const fishCaughtData = {};
+          for (const fishKey in fishList) {
+            const fishName = fishList[fishKey].name;
+            fishCaughtData[fishName] = fishCaught[fishName] || 0;
+          }
+
+          const gameData = {
+            name: userName,
+            email: userEmail,
+            totalscore: calculateTotalScore(),
+            totalfish: calculateTotalFish(),
+            fishCaught: fishCaughtData,
+          };
+          window.jsonData = gameData;
           if (!user) {
             alert('Please sign in to upload data.');
             return;
           }
           const userDocRef = doc(db, 'users', user.uid);
-          const dataCollection = collection(userDocRef, 'playerData');
-          for (const row of window.jsonData) {
-            if (Object.keys(row).length === 0) continue;
-            await addDoc(dataCollection, row);
-          }
-          alert('JSON Data uploaded to Firebase!');
+          const playerDataDocRef = doc(collection(userDocRef, 'playerData'), 'profile');
+          await setDoc(playerDataDocRef, window.jsonData, { merge: true });
+          alert('Game Data updated in Firebase!');
         } catch (error) {
           console.error('Upload failed:', error);
-          alert('Failed to upload JSON data: ' + error.message);
+          alert('Failed to upload game data: ' + error.message);
         }
       });
     } else {
-      console.error('Upload sample Error');
+      console.error('Upload sample button not found in the DOM');
     }
 
     const loadButton = document.getElementById('load-button');
@@ -140,34 +104,31 @@ export function renderUploadJSON() {
             return;
           }
           const userDocRef = doc(db, 'users', user.uid);
-          const dataCollection = collection(userDocRef, 'playerData');
-          const querySnapshot = await getDocs(dataCollection);
+          const playerDataDocRef = doc(collection(userDocRef, 'playerData'), 'profile');
+          const playerDocSnapshot = await getDoc(playerDataDocRef);
           const dataDisplay = document.getElementById('data-display');
           if (!dataDisplay) {
             console.error('Data display element not found in the DOM');
             return;
           }
-          if (querySnapshot.empty) {
+          if (!playerDocSnapshot.exists()) {
             dataDisplay.innerHTML = '<p>No data found for this user.</p>';
             return;
           }
-          let html = '<h3>Loaded Player Data</h3><ul>';
-          querySnapshot.forEach((doc) => {
-            const player = doc.data();
-            html += `
-              <li>
-                <strong>Name:</strong> ${player.name}<br />
-                <strong>Email:</strong> ${player.email}<br />
-                <strong>Total Score:</strong> ${player.totalscore}<br />
-                <strong>Total Fish:</strong> ${player.totalfish}<br />
-                <strong>Trilobites:</strong> ${player.trilobites}<br />
-                <strong>Cod:</strong> ${player.cod}<br />
-                <strong>Salmon:</strong> ${player.salmon}<br />
-                <strong>Trouts:</strong> ${player.trouts}<br />
-              </li>
-            `;
-          });
-          html += '</ul>';
+          const player = playerDocSnapshot.data();
+          let html = '<h3>Loaded Player Data</h3>';
+          html += `
+              <strong>Name:</strong> ${player.name || 'N/A'}<br />
+              <strong>Email:</strong> ${player.email || 'N/A'}<br />
+              <strong>Total Score:</strong> ${player.totalscore || 0}<br />
+              <strong>Total Fish:</strong> ${player.totalfish || 0}<br />
+              <strong>Fish Caught:</strong><br />
+          `;
+          for (const fishKey in fishList) {
+            const fishName = fishList[fishKey].name;
+            const count = player.fishCaught && player.fishCaught[fishName] ? player.fishCaught[fishName] : 0;
+            html += `<strong>${fishName}:</strong> ${count}</br>`;
+          }
           dataDisplay.innerHTML = html;
         } catch (error) {
           console.error('Error loading data from Firestore:', error);
@@ -175,7 +136,26 @@ export function renderUploadJSON() {
         }
       });
     } else {
-      console.error('Load button Error');
+      console.error('Load button not found in the DOM');
     }
+  }
+
+  function calculateTotalScore() {
+    let total = 0;
+    for (const fishKey in fishList) {
+      const fishName = fishList[fishKey].name;
+      const pointValue = fishList[fishKey].pointValue || 0;
+      const count = fishCaught[fishName] || 0;
+      total += count * pointValue;
+    }
+    return total;
+  }
+
+  function calculateTotalFish() {
+    let total = 0;
+    for (const fishName in fishCaught) {
+      total += fishCaught[fishName] || 0;
+    }
+    return total;
   }
 }
