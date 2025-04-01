@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Upload JSON to Firestore</title>
+  
+  <!--Firebase SDK Module-->
+  <script type="module">
+    //Firebase Imports
+    import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-app.js';
+    import { getFirestore, collection, addDoc } from 'https://www.gstatic.com/firebasejs/9.0.0/firebase-firestore.js';
+
+    //These are the values for my firebase account, you'll have to change these to yours!
+    const firebaseConfig = {
+      apiKey: "AIzaSyAdKBnF7crdtN_662DuZS35j-55ovt2PAc",
+      authDomain: "trilobyte-project.firebaseapp.com",
+      projectId: "trilobyte-project",
+      storageBucket: "trilobyte-project.firebasestorage.app",
+      messagingSenderId: "320835804235",
+      appId: "1:320835804235:web:7d9cdc50996db4a28281ce",
+      measurementId: "G-N92GV1L6M4"
+    };
+
+    //Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getFirestore(app);
+
+    //Placeholder data
+    const placeholderJson = {
+      name: "John Zomboid",
+      age: 30,
+      email: "IHaveManyTwins@KYmail.com"
+    };
+
+    //Uploads to Firestore
+    window.uploadFile = async function () {
+      try {
+		//collectName is the collection name on the firestore database
+        const collectionRef = collection(db, 'collectName');
+        await addDoc(collectionRef, placeholderJson);
+        console.log('Document uploaded:', placeholderJson);
+        alert('Upload complete!');
+      } catch (error) {
+        console.error('Error uploading file:', error);
+        alert('Error uploading file!');
+      }
+    };
+  </script>
+
+</head>
+<body>
+  <h2>JSON/FIREBASE Test</h2>
+  <button onclick="uploadFile()">Upload Placeholder JSON</button>
+</body>
+</html>
