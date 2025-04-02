@@ -40,3 +40,7 @@ ul{
 #imgdiv{
     border-radius:25px 25px 0px 0px;
 }
+tr,th,td{
+    border:2px solid black;
+    border-collapse:collapse;
+}
