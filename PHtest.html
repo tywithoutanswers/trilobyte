@@ -13,15 +13,15 @@
 
     //These are the values for my firebase account, you'll have to change these to yours!
     const firebaseConfig = {
-      apiKey: "AIzaSyAdKBnF7crdtN_662DuZS35j-55ovt2PAc",
-      authDomain: "trilobyte-project.firebaseapp.com",
-      projectId: "trilobyte-project",
-      storageBucket: "trilobyte-project.firebasestorage.app",
-      messagingSenderId: "320835804235",
-      appId: "1:320835804235:web:7d9cdc50996db4a28281ce",
-      measurementId: "G-N92GV1L6M4"
+      apiKey: "AIzaSyAOEJIw3iz3p41ssqsPZgTq0E6swbrDF-k",
+      authDomain: "trilobyte-964a8.firebaseapp.com",
+      projectId: "trilobyte-964a8",
+      storageBucket: "trilobyte-964a8.firebasestorage.app",
+      messagingSenderId: "998444788748",
+      appId: "1:998444788748:web:4b843fdfa3d7bc83809229"
     };
 
+    
     //Initialize Firebase
     const app = initializeApp(firebaseConfig);
     const db = getFirestore(app);
@@ -37,7 +37,7 @@
     window.uploadFile = async function () {
       try {
 		//collectName is the collection name on the firestore database
-        const collectionRef = collection(db, 'collectName');
+        const collectionRef = collection(db, 'test-gameupload')
         await addDoc(collectionRef, placeholderJson);
         console.log('Document uploaded:', placeholderJson);
         alert('Upload complete!');
