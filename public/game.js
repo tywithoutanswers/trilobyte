@@ -45,6 +45,8 @@ const defaultFish = {
  *         \/ \__,_|_|  |_|\__,_|_.__/|_|\___|___/
  *                                               
  */
+globalVolume = 0.5;
+
 paused = false;
 
 reeling = false;
@@ -124,13 +126,13 @@ fishList = {
         description: "missing description has been replaced by the description of the default fish",
         image: "game_assets/the-gold-fish_128.png",
 
-        baseChance: 0.1, // chance to randomly appear
+        baseChance: 1000.1, // chance to randomly appear
         pointValue: 1000,
 
         /*behavior*/
         wiggleStrength : 0.4, //0.01 - 0.5
         gravity : 0, // constant downwards accel
-        feistynessMult : 6.0, // linear multiplier for speed based on current capture progress
+        feistynessMult : 3.0, // linear multiplier for speed based on current capture progress
         edgeRepel : 0.3, // force applied away from an edge when within 10 units of it
         captureRateMult : 0.3, // multiplier for how long it takes a fish to capture 
         lungeChance: 0.01, // 0.001 - 0.01 chance to gain a large burst of speed each frame 
@@ -247,11 +249,19 @@ function catchSuccess() {
     //paused = true;
     fishCaught[currentFish.name] ??= 0;
     fishCaught[currentFish.name] += 1;
+    var audio = new Audio('game_assets/catchSuccess.wav');
+    audio.volume = globalVolume;
+    audio.playbackRate = (randInt(80,120) / 100);
+    //audio.play();
     newEncounter()
 }
 
 function catchFail() {
     //paused = true;
+    var audio = new Audio('game_assets/catchFail.wav');
+    audio.volume = globalVolume;
+    audio.playbackRate = (randInt(80,120) / 100);
+    //audio.play();
     newEncounter();
 }
 
@@ -336,7 +346,7 @@ function updatePhysics() {
        
     } else {
         // Failure, decrement captureProgress and show negative capture colour
-        captureProgress-=uncaptureRate;
+        captureProgress-= ((uncaptureRate * currentFish.captureRateMult) + uncaptureRate)/2;
     }
 
     red = Math.round(((100 - captureProgress) / 50) * 255);
