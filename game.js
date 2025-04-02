@@ -10,14 +10,14 @@
  *                                                   
  */
 
-FRAMERATE = 60;
-GRAVITY = 0.02;
+const FRAMERATE = 60;
+const GRAVITY = 0.02;
 
 const defaultFish = {
     /*basic info*/
     name: "Default Fish",
     description: "missing description has been replaced by the description of the default fish",
-    image: "game_assets/fish.png",
+    image: "assets/game_assets/fish.png",
 
     baseChance: 0, // chance to randomly appear
     pointValue: 1,
@@ -44,35 +44,42 @@ const defaultFish = {
  *                                               
  */
 
-reeling = false;
+let reeling = false;
+let captureRate = 0.5;
+let uncaptureRate = 0.1;
+let captureZoneSize = 15;
+let captureProgress = 0;
+let encounterFrameTimer = 0.5;
 
-captureRate = 0.5; // How quickly captureProgress occurs in % per frame
-uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame 
-
-captureZoneSize = 15; // Size of fish catching zone in % of total capture bar size. Recommended not to exceed 15%
-captureProgress = 0; // Progress in % of catching the current fish.
-
-encounterFrameTimer = 0.5;
-
-fishZone = {
+let fishZone = {
     y : 0,
     dy : 2,
     h : 5
 }
-captureZone = {
+let captureZone = {
     y : 0,
     dy : 2,
     h : captureZoneSize
 }
 
-currentFish = {};
+let currentFish = {};
 
-fishList = { 
-
+window.fishList = window.fishList || { 
+    dublinBayPrawm : {
+        name: "Dublin Bay Prawn",
+        description: "insert description",
+        image: "/assets/game_assets/dublin-bay-prawn_64.png",
+        baseChance: 150,
+        pointValue: 10,
+        captureRateMult : 3,
+        feistynessMult: 0.5,
+        wiggleStrength: 0.2,
+        lungeChance: 0,
+    },
     atlanticCod : {
         name: "Atlantic Cod",
         description: "insert description",
-        image: "game_assets/atlantic-cod_128.png",
+        image: "/assets/game_assets/atlantic-cod_128.png",
         baseChance: 100,
         pointValue: 50,
     },
@@ -80,7 +87,7 @@ fishList = {
     commonOctopus : {
         name: "Common Octopus",
         description: "insert description",
-        image: "game_assets/common-octopus_128.png",
+        image: "/assets/game_assets/common-octopus_128.png",
         baseChance: 20,
         pointValue: 120,
         
@@ -91,7 +98,7 @@ fishList = {
     brownCrab : {
         name: "Brown Crab",
         description: "insert description",
-        image: "game_assets/brown_crab.jpeg",
+        image: "/assets/game_assets/brown_crab.jpeg",
         baseChance: 50,
         pointValue: 40,
 
@@ -107,9 +114,9 @@ fishList = {
     goldFish : {
         name: "The Gold Fish",
         description: "missing description has been replaced by the description of the default fish",
-        image: "game_assets/fish.png",
+        image: "/assets/game_assets/fish.png",
 
-        baseChance: 1000.1, // chance to randomly appear
+        baseChance: 0.1, // chance to randomly appear
         pointValue: 1000,
 
         /*behavior*/
@@ -125,7 +132,7 @@ fishList = {
         }  
 };
 
-fishCaught = {};
+window.fishCaught = window.fishCaught || {};
 
 /***
  *      _____                 _                                      ______                _   _                 
@@ -145,13 +152,13 @@ function randInt(min, max) {
 
 // select fish based on weighted random draw, driven by their "baseChance" property.
 function selectFishByChance() {
-    chanceSum = 0;
-    for (field in fishList) {
+    let chanceSum = 0;
+    for (let field in fishList) {
         chanceSum += fishList[field].baseChance ?? 0;
     }
-    randomSelection = randInt(0, chanceSum);
+    let randomSelection = randInt(0, chanceSum);
     console.log(randomSelection);
-    for (field in fishList) {
+    for (let field in fishList) {
         if (randomSelection < fishList[field].baseChance ?? 0) {
             return fishList[field];
         } else {
@@ -183,14 +190,18 @@ function randomApproxNorm(min,max,n) {
  */
 
 // Runs when the page is loaded starting into the gameloop
-function init() {
+function popupClickStart() {
+    document.getElementById("gamePopup").style.visibility = "hidden";
+}
+export function init() {
     loadFishAsCurrent(selectFishByChance());
-    setInterval(gameloop,1000/FRAMERATE);
+    setInterval(gameloop, 1000 / FRAMERATE);
 }
 
 function newEncounter() {
     fishZone.y = randInt(0,100);
     fishZone.dy = 0;
+    captureProgress = 25
     loadFishAsCurrent(selectFishByChance());
 }
 
@@ -214,7 +225,15 @@ function loadFishAsCurrent(fishData) {
     document.getElementById("fishGraphic").src=currentFish.image;
 }
 
+function catchSuccess() {
+    fishCaught[currentFish.name] ??= 0;
+    fishCaught[currentFish.name] += 1;
+    newEncounter();
+}
 
+function catchFail() {
+    newEncounter();
+}
 
 // Contains the code which is run each frame 
 function gameloop() {
@@ -224,17 +243,14 @@ function gameloop() {
     updatePhysics();
     updateHTML();
     if (captureProgress >= 100) {
-        captureProgress = 0;
-        fishCaught[currentFish.name] ??= 0;
-        fishCaught[currentFish.name] += 1;
-        newEncounter();
+        catchSuccess();
     } else if (captureProgress < 1) {
-        captureProgress = 1;
+        catchFail();
     }
 }
 
 function moveFish() {
-    motion = 0;
+    let motion = 0;
     //wiggle
     motion += currentFish.wiggleStrength * Math.random();
     motion -= currentFish.wiggleStrength * Math.random();
@@ -295,47 +311,53 @@ function updatePhysics() {
     ) {
         // Success, increment captureProgress and show positive capture colour
         captureProgress+= captureRate * currentFish.captureRateMult;
-        document.getElementById("progressBar").style = "background-color: green;";
     } else {
         // Failure, decrement captureProgress and show negative capture colour
         captureProgress-=uncaptureRate * currentFish.captureRateMult;
-        document.getElementById("progressBar").style = "background-color: blue;";
     }
+    let red = Math.round(((100 - captureProgress) / 50) * 255);
+    let green = Math.round(( captureProgress / 100) * 255);
+
+    let color = "rgb("+red+","+green+",0)";
+    document.getElementById("progressBar").style.backgroundColor = color;
 }
 
 // Updates CSS and HTML of the page to display the current gamestate
 function updateHTML() {
-    fishZoneElement = document.getElementById("fishZone");
+    let fishZoneElement = document.getElementById("fishZone");
     fishZoneElement.style.bottom = fishZone.y + "%";
     fishZoneElement.style.height = fishZone.h + "%";
 
-    captureZoneElement = document.getElementById("captureZone");
+    let fishGraphicElement = document.getElementById("fishGraphic");
+    fishGraphicElement.style.rotate = (10*fishZone.dy)+"deg";
+
+    let captureZoneElement = document.getElementById("captureZone");
     captureZoneElement.style.bottom = captureZone.y + "%";
     captureZoneElement.style.height = captureZone.h + "%";
 
-    progressBar = document.getElementById("progressBar");
+    let progressBar = document.getElementById("progressBar");
     progressBar.style.height = captureProgress + "%";
 
-    /*
-    testing = document.getElementById("testingParagraph");
-    testing.innerHTML = "";
-    for (field in fishCaught) {
-        testing.innerHTML += field + ":" + fishCaught[field] + "<br>";
+    let sideBarElement = document.getElementById("sideBar");
+    let fishCaughtString = "";
+    for (let fish in fishCaught) {
+        fishCaughtString += fish + ": "
+        fishCaughtString += fishCaught[fish] + "<br>"
     }
-    */
+    sideBarElement.innerHTML = fishCaughtString;
 }
-
 // Prevents default click behaviour
-function startReel(event) {
+export function startReel(event) {
     event.preventDefault();
     reeling = true;
 }
 
-function stopReel(event) {
+export function stopReel(event) {
     event.preventDefault();
     reeling = false;
 }
 
-function preventDefault(event) {
+export function preventDefault(event) {
     event.preventDefault();
 }
+
