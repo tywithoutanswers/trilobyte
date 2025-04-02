@@ -122,7 +122,7 @@ fishList = {
     goldFish : {
         name: "The Gold Fish",
         description: "missing description has been replaced by the description of the default fish",
-        image: "game_assets/fish.png",
+        image: "game_assets/the-gold-fish_128.png",
 
         baseChance: 0.1, // chance to randomly appear
         pointValue: 1000,
