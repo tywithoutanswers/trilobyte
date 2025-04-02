@@ -10,6 +10,8 @@
  *                                                   
  */
 
+//import { documentId } from "@firebase/firestore";
+
 FRAMERATE = 60;
 GRAVITY = 0.02;
 
@@ -43,6 +45,7 @@ const defaultFish = {
  *         \/ \__,_|_|  |_|\__,_|_.__/|_|\___|___/
  *                                               
  */
+paused = false;
 
 reeling = false;
 
@@ -68,6 +71,18 @@ captureZone = {
 currentFish = {};
 
 fishList = { 
+    
+    dublinBayPrawm : {
+        name: "Dublin Bay Prawn",
+        description: "insert description",
+        image: "game_assets/dublin-bay-prawn_64.png",
+        baseChance: 150,
+        pointValue: 10,
+        captureRateMult : 3,
+        feistynessMult: 0.5,
+        wiggleStrength: 0.2,
+        lungeChance: 0,
+    },
 
     atlanticCod : {
         name: "Atlantic Cod",
@@ -122,7 +137,7 @@ fishList = {
         lungePower: 0, // [1-4] power of a lunge 
         lungeIsJump: false,
         drag: 0.1,
-        }  
+    },
 };
 
 fishCaught = {};
@@ -150,7 +165,7 @@ function selectFishByChance() {
         chanceSum += fishList[field].baseChance ?? 0;
     }
     randomSelection = randInt(0, chanceSum);
-    console.log(randomSelection);
+    //console.log(randomSelection);
     for (field in fishList) {
         if (randomSelection < fishList[field].baseChance ?? 0) {
             return fishList[field];
@@ -186,6 +201,12 @@ function popupClickStart() {
     document.getElementById("gamePopup").style.visibility = "hidden";
 }
 
+function sizeFish(size) {
+    fishGraphicElement = document.getElementById("fishGraphic");
+    fishGraphicElement.style.width = size;
+    fishGraphicElement.style.height = size;
+}
+
 
 // Runs when the page is loaded starting into the gameloop
 function init() {
@@ -195,9 +216,10 @@ function init() {
 
 function newEncounter() {
    // document.getElementById("gamePopup").style.visibility = "visible";
+    paused = false;
     fishZone.y = randInt(0,100);
     fishZone.dy = 0;
-    captureProgress = 25;
+    captureProgress = 30;
     loadFishAsCurrent(selectFishByChance());
 }
 
@@ -222,26 +244,30 @@ function loadFishAsCurrent(fishData) {
 }
 
 function catchSuccess() {
+    //paused = true;
     fishCaught[currentFish.name] ??= 0;
     fishCaught[currentFish.name] += 1;
-    newEncounter();
+    newEncounter()
 }
 
 function catchFail() {
+    //paused = true;
     newEncounter();
 }
 
 // Contains the code which is run each frame 
 function gameloop() {
-    if (reeling) {
-        captureZone.dy = Math.min(1, captureZone.dy + 0.1);
-    }
-    updatePhysics();
-    updateHTML();
-    if (captureProgress >= 100) {
-        catchSuccess();
-    } else if (captureProgress < 1) {
-        catchFail();
+    if (!paused) {
+        if (reeling) {
+            captureZone.dy = Math.min(1, captureZone.dy + 0.1);
+        }
+        updatePhysics();
+        updateHTML();
+        if (captureProgress >= 100) {
+            catchSuccess();
+        } else if (captureProgress < 1) {
+            catchFail();
+        }
     }
 }
 
@@ -310,7 +336,7 @@ function updatePhysics() {
        
     } else {
         // Failure, decrement captureProgress and show negative capture colour
-        captureProgress-=uncaptureRate * currentFish.captureRateMult;
+        captureProgress-=uncaptureRate;
     }
 
     red = Math.round(((100 - captureProgress) / 50) * 255);
@@ -336,14 +362,14 @@ function updateHTML() {
     progressBarElement = document.getElementById("progressBar");
     progressBarElement.style.height = captureProgress + "%";
 
-    sideBarElement = document.getElementById("sideBar");
+    sideBarTextElement = document.getElementById("sideBarText");
 
     fishCaughtString = "";
     for (fish in fishCaught) {
         fishCaughtString += fish + ": "
         fishCaughtString += fishCaught[fish] + "<br>"
     }
-    sideBarElement.innerHTML = fishCaughtString;
+    sideBarTextElement.innerHTML = fishCaughtString;
 }
 
 // Prevents default click behaviour
