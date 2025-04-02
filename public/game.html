@@ -5,8 +5,8 @@
         <link rel="stylesheet" href="game.css">
         <style>
         body {
-            display: flex;
-            justify-content: center;
+            width: 100%;
+            flex-direction: column;
             background-color: aquamarine;
         }
 
@@ -15,29 +15,43 @@
         }
 
         #gameUIContainer {
+            position: fixed;
             display: flex;
-            position: relative;
             width: 20vh;
             height: 80vh;
             margin: 20px;
+            z-index: 10;
+            position:absolute;
+            left: 50%;
+            transform: translate(-50%,0);
         }
 
         #encounterChart {
+            box-sizing: border-box;
             flex: 2 10vh;
             width: 100%;
             display: flex;
             position: relative;
             align-items: flex-end;
-            border: 1px solid black;
+            border: 5px solid rgb(0, 168, 168);;
+            border-right: 0px;
+            border-radius: 5px 0px 0px 5px;
+
+            background: linear-gradient(  rgb(133, 186, 238),rgb(118, 189, 190));
+            z-index: 10;
         }
 
         #progressChart {
+            box-sizing: border-box;
             flex: 1 5vh;
             width: 100%;
             display: flex;
             position: relative;
             align-items: flex-end;
-            border: 1px solid black;
+            background-color: aqua;
+            border: 5px solid rgb(0, 168, 168);
+            border-radius: 0px 5px 5px 0px;
+            z-index: 10;
         }
 
         #progressBar {
@@ -45,6 +59,8 @@
             background-color: blue;
             width: inherit;
             height: 60%;
+            border-radius: 2px 2px 0px 0px;
+            z-index: 20;
         }
         
         #captureZone {
@@ -52,6 +68,7 @@
             background-color: green;
             width: inherit;
             height: 10%;
+            z-index: 20;
         }
 
         #fishZone {
@@ -59,10 +76,12 @@
             width: inherit;
             height: 10%;
             bottom: 10%;
+            
 
             display: flex;
             align-items: center;
             justify-content: center;
+            z-index: 30;
         }
 
         #fishGraphic {
@@ -70,17 +89,37 @@
             width: 10vh;
             height: 10vh;
             z-index: 100;
+            z-index: 40;
         }
 
         #gamePopup {
+            visibility: hidden;
             position: absolute;
-            border: 1px solid red;
+            background-color: aqua;
+            border: 5px solid rgb(0, 168, 168);
+            padding: 5px;
+            border-radius: 10px;
+            max-height: 80vh;
+            min-height: 10vh;
+            min-width: 10vw;
+            max-width: 100%;
+            margin: 20px 20px 20px 0px;
+            z-index: 100;
         }
 
         #sideBar {
-            border: 1px solid red;
-            max-height: 50%;
-
+            position: fixed;
+            right: 0px;
+            background-color: aqua;
+            border: 5px solid rgb(0, 168, 168);
+            padding: 5px;
+            border-radius: 10px;
+            max-height: 80vh;
+            min-height: 10vh;
+            min-width: 10vw;
+            max-width: 100%;
+            margin: 20px 20px 20px 0px;
+            z-index: 20;
         }
 
 
@@ -90,9 +129,9 @@
     <body onload="init()", onmousedown="startReel(event);", onmouseup="stopReel(event);">
 
         <div id="gamePopup">
-            <h3>I am the header</h3>
-            <p>I am the desc</p>
-            <button>I am the button</button>
+            <h3 id="popupHead">I am the header</h3>
+            <p id="popupBody">I am the desc</p>
+            <button id="popupButton">I am the button</button>
         </div>
 
         <div id="gameUIContainer">
@@ -110,10 +149,10 @@
         </div>
 
         <div id="sideBar">
-            yapyapyap
+            yipyip<br>
+            dfjhdj
         </div>
 
-        <div id="test", style="max-width: 100px;"></div>
     </body>
 </html>
 

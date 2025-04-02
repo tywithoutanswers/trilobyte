@@ -109,7 +109,7 @@ fishList = {
         description: "missing description has been replaced by the description of the default fish",
         image: "game_assets/fish.png",
 
-        baseChance: 1000.1, // chance to randomly appear
+        baseChance: 0.1, // chance to randomly appear
         pointValue: 1000,
 
         /*behavior*/
@@ -182,6 +182,11 @@ function randomApproxNorm(min,max,n) {
  *                                                                               
  */
 
+function popupClickStart() {
+    document.getElementById("gamePopup").style.visibility = "hidden";
+}
+
+
 // Runs when the page is loaded starting into the gameloop
 function init() {
     loadFishAsCurrent(selectFishByChance());
@@ -189,8 +194,10 @@ function init() {
 }
 
 function newEncounter() {
+   // document.getElementById("gamePopup").style.visibility = "visible";
     fishZone.y = randInt(0,100);
     fishZone.dy = 0;
+    captureProgress = 25;
     loadFishAsCurrent(selectFishByChance());
 }
 
@@ -214,7 +221,15 @@ function loadFishAsCurrent(fishData) {
     document.getElementById("fishGraphic").src=currentFish.image;
 }
 
+function catchSuccess() {
+    fishCaught[currentFish.name] ??= 0;
+    fishCaught[currentFish.name] += 1;
+    newEncounter();
+}
 
+function catchFail() {
+    newEncounter();
+}
 
 // Contains the code which is run each frame 
 function gameloop() {
@@ -224,12 +239,9 @@ function gameloop() {
     updatePhysics();
     updateHTML();
     if (captureProgress >= 100) {
-        captureProgress = 0;
-        fishCaught[currentFish.name] ??= 0;
-        fishCaught[currentFish.name] += 1;
-        newEncounter();
+        catchSuccess();
     } else if (captureProgress < 1) {
-        captureProgress = 1;
+        catchFail();
     }
 }
 
@@ -295,12 +307,17 @@ function updatePhysics() {
     ) {
         // Success, increment captureProgress and show positive capture colour
         captureProgress+= captureRate * currentFish.captureRateMult;
-        document.getElementById("progressBar").style = "background-color: green;";
+       
     } else {
         // Failure, decrement captureProgress and show negative capture colour
         captureProgress-=uncaptureRate * currentFish.captureRateMult;
-        document.getElementById("progressBar").style = "background-color: blue;";
     }
+
+    red = Math.round(((100 - captureProgress) / 50) * 255);
+    green = Math.round(( captureProgress / 100) * 255);
+
+    color = "rgb("+red+","+green+",0)";
+    document.getElementById("progressBar").style.backgroundColor = color;
 }
 
 // Updates CSS and HTML of the page to display the current gamestate
@@ -308,21 +325,25 @@ function updateHTML() {
     fishZoneElement = document.getElementById("fishZone");
     fishZoneElement.style.bottom = fishZone.y + "%";
     fishZoneElement.style.height = fishZone.h + "%";
+    
+    fishGraphicElement = document.getElementById("fishGraphic");
+    fishGraphic.style.rotate = (10*fishZone.dy)+"deg";
 
     captureZoneElement = document.getElementById("captureZone");
     captureZoneElement.style.bottom = captureZone.y + "%";
     captureZoneElement.style.height = captureZone.h + "%";
 
-    progressBar = document.getElementById("progressBar");
-    progressBar.style.height = captureProgress + "%";
+    progressBarElement = document.getElementById("progressBar");
+    progressBarElement.style.height = captureProgress + "%";
 
-    /*
-    testing = document.getElementById("testingParagraph");
-    testing.innerHTML = "";
-    for (field in fishCaught) {
-        testing.innerHTML += field + ":" + fishCaught[field] + "<br>";
+    sideBarElement = document.getElementById("sideBar");
+
+    fishCaughtString = "";
+    for (fish in fishCaught) {
+        fishCaughtString += fish + ": "
+        fishCaughtString += fishCaught[fish] + "<br>"
     }
-    */
+    sideBarElement.innerHTML = fishCaughtString;
 }
 
 // Prevents default click behaviour
