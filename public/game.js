@@ -28,7 +28,7 @@ const defaultFish = {
     wiggleStrength : 0.1, //0.01 - 0.5
     gravity : 0, // constant downwards accel
     feistynessMult : 1.1, // linear multiplier for speed based on current capture progress
-    edgeRepel : 0.1, // force applied away from an edge when within 10 units of it
+    edgeRepel : 0.2, // force applied away from an edge when within 10 units of it
     captureRateMult : 1, // multiplier for how long it takes a fish to capture 
     lungeChance: 0.01, // 0.001 - 0.01 chance to gain a large burst of speed each frame 
     lungePower: 1, // [1-4] power of a lunge 
@@ -45,13 +45,18 @@ const defaultFish = {
  *         \/ \__,_|_|  |_|\__,_|_.__/|_|\___|___/
  *                                               
  */
+audioSuccess = new Audio('game_assets/catchSuccess.wav');
+audioFail = new Audio('game_assets/catchFail.wav');
+
+enableSound = false; // it's chrome's policy sound should not autoplay on a page which hasn't been interacted with
+
 globalVolume = 0.5;
 
 paused = false;
 
 reeling = false;
 
-captureRate = 0.5; // How quickly captureProgress occurs in % per frame
+captureRate = 0.4; // How quickly captureProgress occurs in % per frame
 uncaptureRate = 0.1; // How quickly captureProgress decreases in % per frame 
 
 captureZoneSize = 15; // Size of fish catching zone in % of total capture bar size. Recommended not to exceed 15%
@@ -113,7 +118,7 @@ fishList = {
         pointValue: 40,
 
         wiggleStrength: 0,
-        edgeRepel: 0.01,
+        edgeRepel: 0,
         gravity: 0.04,
         lungeChance: 0.015,
         lungePower: 2.4,
@@ -126,7 +131,7 @@ fishList = {
         description: "missing description has been replaced by the description of the default fish",
         image: "game_assets/the-gold-fish_128.png",
 
-        baseChance: 1000.1, // chance to randomly appear
+        baseChance: 0.1, // chance to randomly appear
         pointValue: 1000,
 
         /*behavior*/
@@ -249,19 +254,21 @@ function catchSuccess() {
     //paused = true;
     fishCaught[currentFish.name] ??= 0;
     fishCaught[currentFish.name] += 1;
-    var audio = new Audio('game_assets/catchSuccess.wav');
-    audio.volume = globalVolume;
-    audio.playbackRate = (randInt(80,120) / 100);
-    //audio.play();
+    if (enableSound) {
+        audioSuccess.volume = globalVolume;
+        audioSuccess.playbackRate = (randInt(80,120) / 100);
+        audioSuccess.play();
+    }
     newEncounter()
 }
 
 function catchFail() {
     //paused = true;
-    var audio = new Audio('game_assets/catchFail.wav');
-    audio.volume = globalVolume;
-    audio.playbackRate = (randInt(80,120) / 100);
-    //audio.play();
+    if (enableSound) {
+        audioFail.volume = globalVolume;
+        audioFail.playbackRate = (randInt(80,120) / 100);
+        audioFail.play();
+    }
     newEncounter();
 }
 
@@ -343,10 +350,12 @@ function updatePhysics() {
     ) {
         // Success, increment captureProgress and show positive capture colour
         captureProgress+= captureRate * currentFish.captureRateMult;
+        document.getElementById("captureZone").style.opacity = "100%";
        
     } else {
         // Failure, decrement captureProgress and show negative capture colour
         captureProgress-= ((uncaptureRate * currentFish.captureRateMult) + uncaptureRate)/2;
+        document.getElementById("captureZone").style.opacity = "75%";
     }
 
     red = Math.round(((100 - captureProgress) / 50) * 255);
@@ -354,6 +363,7 @@ function updatePhysics() {
 
     color = "rgb("+red+","+green+",0)";
     document.getElementById("progressBar").style.backgroundColor = color;
+    document.getElementById("progressBar").style.borderColor = color;
 }
 
 // Updates CSS and HTML of the page to display the current gamestate

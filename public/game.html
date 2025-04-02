@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html>
+<html onclick="enableSound=true;", oncontextmenu="preventDefault(event)">
     <head>
         <script src="game.js"></script>
         <style>
@@ -14,7 +14,8 @@
         body {
             width: 100%;
             flex-direction: column;
-            background-color: aquamarine;
+            background-image:url("water.jpeg");
+            background-size:1600px,3000px;
         }
 
         img {
@@ -34,8 +35,9 @@
         }
 
         #encounterChart {
+           
             box-sizing: border-box;
-            flex: 2 10vh;
+            flex: 4 4vh;
             width: 100%;
             display: flex;
             position: relative;
@@ -44,13 +46,13 @@
             border-right: 0px;
             border-radius: 5px 0px 0px 5px;
 
-            background: linear-gradient(  rgb(133, 186, 238),rgb(118, 189, 190));
+            background: linear-gradient(  rgb(103, 156, 238),rgb(58, 79, 240));
             z-index: 10;
         }
 
         #progressChart {
             box-sizing: border-box;
-            flex: 1 5vh;
+            flex: 3 3vh;
             width: 100%;
             display: flex;
             position: relative;
@@ -62,17 +64,21 @@
         }
 
         #progressBar {
+            box-sizing: border-box;
             position: absolute;
             background-color: blue;
             width: inherit;
             height: 60%;
             border-radius: 2px 2px 0px 0px;
+            border: inset 5px blue;
             z-index: 20;
         }
         
         #captureZone {
+            box-sizing: border-box;
             position: absolute;
             background-color: green;
+            border: outset 5px green;
             width: inherit;
             height: 10%;
             z-index: 20;
@@ -133,7 +139,7 @@
         
         </style>
     </head>
-    <body onload="init()", onmousedown="startReel(event);", onmouseup="stopReel(event);">
+    <body onload="init()", onmousedown="startReel(event);", onmouseup="stopReel(event);", oncontextmenu="preventDefault(event)">
 
         <div id="gamePopup">
             <h3 id="popupHead">I am the header</h3>
