@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome - Trilobyte Trawling</title>
+    <link rel="stylesheet" href="/assets/fishstyle.css" />
+  </head>
+  <body>
+    <div class="welcome">
+      <h1>Welcome to Trilobyte Trawling!</h1>
+      <p>Get started by signing in or playing the game.</p>
+      <button onclick="window.history.pushState({}, '', '/login'); window.renderPage();">Login / Sign up</button>
+      <button href="#" id="signout-button">Sign Out</button>
+      <button onclick=" window.location.href='/pages/game.html'">Play Game</button>
+      <button onclick="window.history.pushState({}, '', '/leaderboard'); window.renderPage();">Leaderboard</button>
+      <button onclick=" window.location.href='/pages/fishdescription.html'">Fish Descriptions</button>
+      <button onclick=" window.location.href='/public/pages/fishtutorial.html'">Fish Tutorial</button>
+      <button onclick=" window.location.href='/public/weatherExample.html'">Global Conditions</button>
+  </body>
+</html>

@@ -1,0 +1,41 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Welcome - Trilobyte Trawling</title>
+    <link rel="stylesheet" href="/assets/fishstyle.css" />
+  </head>
+  <body>
+    <div class="welcome">
+      <h1>Welcome to Trilobyte Trawling!</h1>
+      <p>Get started by signing in or playing the game.</p>
+      <button onclick="window.history.pushState({}, '', '/login'); window.renderPage();">Login</button>
+      <button onclick="window.history.pushState({}, '', '/signUp'); window.renderPage();">Sign Up</button>
+      <button onclick="window.history.pushState({}, '', '/game'); window.renderPage();">Play Game</button>
+      <button onclick="window.history.pushState({}, '', '/leaderboard'); window.renderPage();">Leaderboard</button>
+      <button onclick=" window.location.href='/public/pages/fishdescription.html'">fish descriptiom</button>
+      <button onclick=" window.location.href='/public/pages/fishprofile.html'">fish profile</button>
+      <button onclick=" window.location.href='/public/pages/fishmain.html'">fish main</button>
+      <button onclick=" window.location.href='/public/pages/fishtutorial.html'">fish tutorial</button>
+      <button href="#" id="signout-button">signout</button>
+    </div>
+    <div class="upload-json" id="upload-section">
+    </div>
+  </body>
+</html>
+<html>
+ <head>
+ <title>Your Profile</title>   
+<link rel="stylesheet" href="/assets/fishstyle.css">
+ </head>
+ <body>
+<div>
+    <h3>Your profile</h3>
+    <p>Username:</p>
+    <p>Personal High Score:</p>
+    
+    <button onclick=" window.location.href='fishmain.html'">Back to Game</button><br>
+    <button onclick=" window.location.href='fishchangeaccinfo.html'">Change Account Info</button>
+    <div class="upload-json" id="upload-section"></div>
+</div>
+ </body>   
+</html>
