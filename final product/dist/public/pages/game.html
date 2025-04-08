@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html onclick="enableSound=true;" oncontextmenu="preventDefault(event)">
+  <head>
+    <style>
+      body {
+        width: 100%;
+        flex-direction: column;
+        background-image:url("/assets/oceanstock.jpg");
+        background-color: aquamarine;
+        margin: 0;
+        height: 100vh;
+        overflow: hidden;
+      }
+
+      img {
+        user-select: none;
+      }
+
+      #gameUIContainer {
+        position: fixed;
+        display: flex;
+        width: 20vh;
+        height: 80vh;
+        margin: 20px;
+        transform: translate(-50%,0);
+      }
+
+      #encounterChart {
+        box-sizing: border-box;
+        flex: 2 10vh;
+        width: 100%;
+        display: flex;
+        position: relative;
+        align-items: flex-end;
+        border: 5px solid rgb(0, 168, 168);;
+        border-right: 0px;
+        border-radius: 5px 0px 0px 5px;
+
+        background: linear-gradient(  rgb(133, 186, 238),rgb(118, 189, 190));
+        z-index: 10;
+      }
+      
+
+      #progressChart {
+        box-sizing: border-box;
+        flex: 3 3vh;
+        width: 100%;
+        display: flex;
+        position: relative;
+        align-items: flex-end;
+        background-color: aqua;
+        border: 5px solid rgb(0, 168, 168);
+        border-radius: 0px 5px 5px 0px;
+        z-index: 10;
+      }
+
+      #progressBar {
+        box-sizing: border-box;
+        position: absolute;
+        background-color: blue;
+        width: inherit;
+        height: 60%;
+        border-radius: 2px 2px 0px 0px;
+        border: inset 5px blue;
+        z-index: 20;
+        bottom: 0;
+      }
+
+      #captureZone {
+        box-sizing: border-box;
+        position: absolute;
+        background-color: green;
+        border: outset 5px green;
+        width: inherit;
+        height: 10%;
+        z-index: 20;
+      }
+      #fishZone {
+        position: absolute;
+        width: inherit;
+        height: 10%;
+        bottom: 10%;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 30;
+      }
+
+      #fishGraphic {
+        position: absolute;
+        width: 10vh;
+        height: 10vh;
+        z-index: 100;
+        z-index: 40;
+      }
+      
+
+      #gamePopup {
+        visibility: hidden;
+        position: absolute;
+        background-color: aqua;
+        border: 5px solid rgb(0, 168, 168);
+        padding: 5px;
+        border-radius: 10px;
+        max-height: 80vh;
+        min-height: 10vh;
+        min-width: 10vw;
+        max-width: 100%;
+        margin: 20px 20px 20px 0px;
+        z-index: 100;
+      }
+
+      #sideBar {
+        position: fixed;
+        right: 0px;
+        background-color: aqua;
+        border: 5px solid rgb(0, 168, 168);
+        padding: 5px;
+        border-radius: 10px;
+        max-height: 100%;
+        min-height: 10vh;
+        min-width: 10vw;
+        max-width: 60vh;
+        margin: 20px 20px 20px 0px;
+        z-index: 20;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="welcome">
+      <h1>Trilobyte Trawling!</h1>
+      <div class="upload-json" id="upload-section"></div>
+    </div>
+
+    <div id="gamePopup">
+      <h3 id="popupHead">I am the header</h3>
+      <p id="popupBody">I am the desc</p>
+      <button id="popupButton">I am the button</button>
+    </div>
+
+    <div id="gameUIContainer">
+      <div id="encounterChart">
+        <div id="captureZone"></div>
+        <div id="fishZone">
+          <img id="fishGraphic" draggable="false" src="/assets/game_assets/fish.png">
+        </div>
+      </div>
+      <div id="progressChart">
+        <div id="progressBar"></div>
+      </div>
+    </div>
+    <div id="sideBar">
+      <h2 style="text-align: center;">Fish Caught</h2>
+      <hr style="background-color: black; border-color: black;">
+      <p id="sideBarText"></p>
+    </div>
+    <div id="test" style="max-width: 100px;"></div>
+    <button href="/" id="back-link">Back</button>
+  </body>
+</html>
