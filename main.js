@@ -1,11 +1,8 @@
-import { renderFishWelcome } from '@/pages/welcome';
-import { renderFishLogin } from '@/pages/login';
-import { renderFishSignUp } from '@/pages/signUP';
-import { renderFishLeaderboard } from '@/pages/leaderboard';
-
-
-import '@/firebase';
-async function renderFishGame() {
+import { renderFishWelcome } from '/public/pages/welcome';
+import { renderFishLogin } from '/public/pages/login';
+import { renderFishSignUp } from '/public/pages/signUp';
+import { renderFishLeaderboard } from '/public/pages/leaderboard';
+import './public/assets/firebase';async function renderFishGame() {
   const backLink = document.getElementById('back-link');
   if (backLink) {
     backLink.addEventListener('click', (e) => {
@@ -13,18 +10,12 @@ async function renderFishGame() {
       window.history.pushState({}, '', '/');
       window.renderPage();
     });
-  } else {
-    console.error('Back link not found in the DOM');
-  }
-}
-
-window.renderPage = async () => {
+  } 
+}window.renderPage = async () => {
   const path = window.location.pathname;
   const app = document.getElementById('app');
   let htmlFile = '';
-  let initFunction = null;
-
-  if (path === '/' || path === '') {
+  let initFunction = null;  if (path === '/' || path === '') {
     htmlFile = '/pages/welcome.html';
     initFunction = renderFishWelcome;
   } else if (path === '/login') {
@@ -33,7 +24,7 @@ window.renderPage = async () => {
   } else if (path === '/signUp') {
     htmlFile = '/pages/signUp.html';
     initFunction = renderFishSignUp;
-  }else if (path === '/game') {
+  } else if (path === '/game') {
     htmlFile = '/pages/game.html';
     initFunction = renderFishGame;
   } else if (path === '/leaderboard') {
@@ -43,12 +34,10 @@ window.renderPage = async () => {
     window.history.pushState({}, '', '/');
     htmlFile = '/pages/welcome.html';
     initFunction = renderFishWelcome;
-  }
-
-  try {
-    const response = await fetch(htmlFile);
+  }  try {
+    const response = await fetch(htmlFile, { cache: 'no-store' });
     if (!response.ok) {
-      throw new Error('Failed to load HTML file');
+      throw new Error("Failed to load ${htmlFile}: ${response.status} ${response.statusText}");
     }
     const html = await response.text();
     app.innerHTML = html;
@@ -59,11 +48,8 @@ window.renderPage = async () => {
     console.error('Error loading page:', error);
     app.innerHTML = '<p>Error loading page. Please try again.</p>';
   }
-};
-
-
-window.renderPage();
-
+};window.renderPage();
 window.addEventListener('popstate', () => {
   window.renderPage();
 });
+

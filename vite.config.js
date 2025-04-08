@@ -1,18 +1,37 @@
-import { fileURLToPath, URL } from 'node:url'
-
-import { defineConfig } from 'vite'
-import vue from '@vitejs/plugin-vue'
-import vueDevTools from 'vite-plugin-vue-devtools'
-
-// https://vite.dev/config/
+import { defineConfig } from 'vite';
+import { resolve } from 'path';
 export default defineConfig({
-  plugins: [
-    vue(),
-    vueDevTools(),
-  ],
+  plugins: [],
+  base: '/',
+  publicDir: 'public',
+  server: {
+    port: 5173,
+    host: 'localhost',
+    strictPort: true,
+    fs: {
+      strict: false
+    },
+    historyApiFallback: true 
+  },
+  build: {
+    outDir: 'dist',
+    chunkSizeWarningLimit: 600,
+    rollupOptions: {
+      input: {
+        game: './public/pages/game.html'
+      },
+      output: {
+        entryFileNames: 'assets/[name]-[hash].js',
+        chunkFileNames: 'assets/[name]-[hash].js',
+        assetFileNames: 'assets/[name]-[hash].[ext]'
+      }
+    }
+  },
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url))
-    },
-  },
-})
+      '@': resolve(__dirname, 'src')
+    }
+  }
+});
+
+

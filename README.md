@@ -1,27 +1,18 @@
 # trilobyte
+Setting up the project on a local repository
+
+required Node.js
+
 ## Project Setup
 ```sh
-# clone from github and then inside the project folder
-npm install #installs dependecies listed in package.json
-firebase init #initialize a firebase project in this dir
-# use onlyhosting and say no to singlepage app and any options which overwrite existing files
+npm install #to install dependencies like vite
 ```
-
-### Compile and Hot-Reload for Development
-
+## Local Test
 ```sh
-npm run dev 
+npm run dev #to locally test without deploying to firebase
 ```
-
-### Compile and Deploy
-
+## Deploy to firebase
 ```sh
 npm run build
-firebase deploy --only hosting 
+firebase deploy --only hosting #deploy to firebase
 ```
-
-## When developing
-Static html and css files go into /public
-The index.html file must go in the project folder (trilobyte)
-Vue components/pages go into src/components
-Vue assets go into src/assets
